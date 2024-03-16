@@ -188,7 +188,7 @@ EDS_GTESTF(CallHandlerUGTest, UT01, CallHandlerTF, VoidParamsNoexcept) {
         EDS_PROBE(EXPECT_EQ(expected_CallBack_type_comparison_result,actual_CallBack_type_comparison_result));
         TestAdderResource resource;
         // normally done by the delegate
-        AdderTestWrapper_t ch(adderTestFunction,(size_t)incrementTestFunction,&resource);
+        AdderTestWrapper_t ch(adderTestFunction,&resource);
         ch(1,2);
         EDS_PROBE(EXPECT_EQ(3, get_stotal()));
 }
@@ -204,7 +204,7 @@ EDS_GTESTF(CallHandlerUGTest, UT02, CallHandlerTF, VoidNoparamsNoexcept) {
         EDS_PROBE(EXPECT_EQ(expected_CallBack_type_comparison_result,actual_CallBack_type_comparison_result));
         IncrementMockResource resource;
         // normally done by the delegate
-        IncrementTestWrapper_t ch(incrementTestFunction,(size_t)incrementTestFunction,&resource);
+        IncrementTestWrapper_t ch(incrementTestFunction,&resource);
         ch();
         EDS_PROBE(EXPECT_EQ(1, get_stotal()));
 }
@@ -269,7 +269,7 @@ EDS_GTESTF(CallHandlerUGTest, UT07, CallHandlerTF, LambdaVoidParamsNoexcept) {
         auto lambda = [](int* a, int b) noexcept -> void {
                   *a += b;
         };
-        AdderTestWrapper_t ch(lambda,1,&resource);
+        AdderTestWrapper_t ch(lambda,&resource);
         ch(&total,2);
         EDS_PROBE(EXPECT_EQ(2, total));
 }
@@ -277,16 +277,16 @@ EDS_GTESTF(CallHandlerUGTest, UT07, CallHandlerTF, LambdaVoidParamsNoexcept) {
 #ifdef UT08
 /// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidParamsNoexcept
 /// tests the creation of an eds::CallHandler for a static delegate with parameters.
-EDS_GTESTF(CallHandlerUGTest, UT08, CallHandlerTF, LambdaVoidParamsNoexcept) {
-      using AdderTestWrapper_t = EDS CallHandler<EDS FunctionPointer,int*,int>;
+EDS_GTESTF(CallHandlerUGTest, UT08, CallHandlerTF, CaptureLambdaVoidParamsNoexcept) {
       TestPointerResource resource;
         int another_total = 2;
         int total = 0;
-        auto lambda = [=](int* a, int b) noexcept -> void {
+        auto lambda = [&](int* a, int b) noexcept -> void {
                   *a += b;
                   *a += another_total;
         };
-        AdderTestWrapper_t ch(lambda,1,&resource);
+        using AdderTestWrapper_t = EDS CallHandler<EDS LambdaRef, decltype(lambda),int*,int>;
+        AdderTestWrapper_t ch(lambda,&resource);
         ch(&total,2);
         EDS_PROBE(EXPECT_EQ(another_total + 2, total));
 }

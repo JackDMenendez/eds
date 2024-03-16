@@ -53,6 +53,7 @@ EDS_CREATE_PSUEDO(NoException,ExceptionRegime);
 EDS_CREATE_PSUEDO(ResourceHandlingRegime, PSuedoObject);
 EDS_CREATE_PSUEDO(MemberPointer,ResourceHandlingRegime);
 EDS_CREATE_PSUEDO(FunctionPointer,ResourceHandlingRegime);
+EDS_CREATE_PSUEDO(LambdaRef,ResourceHandlingRegime);
 template <typename T> struct is_psuedo : public std::false_type { };
 template <> struct is_psuedo<VoidReturnCode> : public std::true_type { };
 template <> struct is_psuedo<VoidParams> : public std::true_type { };
@@ -64,6 +65,7 @@ template <> struct is_psuedo<ResourceHandlingRegime> : public std::true_type { }
 template <> struct is_psuedo<MemberPointer> : public std::true_type { };
 template <> struct is_psuedo<FunctionPointer> : public std::true_type { };
 template <> struct is_psuedo<ExceptionRegime> : public std::true_type { };
+template <> struct is_psuedo<LambdaRef> : public std::true_type { };
 template <> struct is_psuedo<YesException> : public std::true_type { };
 template <> struct is_psuedo<NoException> : public std::true_type { };
 template <typename T> 
