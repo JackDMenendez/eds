@@ -16,6 +16,7 @@
 #define UT06 6
 #define UT07 7
 #define UT08 8
+#define UT09 9
 class TestAdderResource : public EDS DelegateResourceManager<int, int>
 { 
       public:
@@ -289,5 +290,22 @@ EDS_GTESTF(CallHandlerUGTest, UT08, CallHandlerTF, CaptureLambdaVoidParamsNoexce
         AdderTestWrapper_t ch(lambda,&resource);
         ch(&total,2);
         EDS_PROBE(EXPECT_EQ(another_total + 2, total));
+}
+#endif
+#ifdef UT09
+/// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidParamsNoexcept
+/// tests the creation of an eds::CallHandler for a static delegate with parameters.
+EDS_GTESTF(CallHandlerUGTest, UT09, CallHandlerTF, CaptureLambdaVoidNoexcept) {
+      TestIncrementResource resource;
+        int another_total = 2;
+        int total = 0;
+        auto lambda = [&]() noexcept -> void {
+                  
+                  total += another_total;
+        };
+        using AdderTestWrapper_t = EDS CallHandler<EDS LambdaRef, decltype(lambda)>;
+        AdderTestWrapper_t ch(lambda,&resource);
+        ch();
+        EDS_PROBE(EXPECT_EQ(another_total, total));
 }
 #endif
