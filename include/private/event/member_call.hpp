@@ -77,16 +77,6 @@ struct MemberCallBase<RC,CONSTANT,EXCEPT_REGIME,CLASS> :
       virtual ~MemberCallBase() noexcept = default;
 };
 template <typename... FOOTPRINT> class MemberCall;
-/*
-template <class RC, class CONSTANT, class EXCEPT_REGIME, class CLASS, class... PARMS> 
-requires ConstRegime<CONSTANT> && ExceptRegime<EXCEPT_REGIME> && SomeClassType<CLASS>
-class MemberCall<RC,CONSTANT,EXCEPT_REGIME,CLASS,PARMS...> 
-      : public MemberCallBase<RC,CONSTANT,EXCEPT_REGIME,CLASS,PARMS...> {
-    public:
-      static constexpr bool is_legit_v = false;
-      using Member_t = RC (CLASS::*)(PARMS...);
-};
-*/
 template <class CLASS, class... PARMS> 
 requires SomeClassType<CLASS>
 class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...> 
@@ -131,8 +121,8 @@ class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...>
                 (this->m_object->*this->m_member)(std::forward<PARMS>(args)...);
         }
         constexpr auto
-        operator==(MemberCall const &other) const noexcept -> bool {
-                return this->m_object == other.m_object && this->m_member == other.m_member;
+        operator==(const Caller<PARMS...> &other) const noexcept -> bool {
+                return hash() == other.hash();
         }
         constexpr auto
         operator!=(MemberCall const &other) const noexcept -> bool {
@@ -184,14 +174,14 @@ class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>
                 (this->m_object->*this->m_member)();
         }
         constexpr auto
-        operator==(MemberCall const &other) const noexcept -> bool {
-                return this->m_object == other.m_object && this->m_member == other.m_member;
+        operator==(Caller<> const &other) const noexcept -> bool {
+                return hash() == other.hash();
         }
         constexpr auto
         operator!=(MemberCall const &other) const noexcept -> bool {
                 return !(*this == other);
         }
-        constexpr ~MemberCall() noexcept { }
+        constexpr ~MemberCall() noexcept = default;
 };
 template <class CLASS, class... PARMS> 
 requires SomeClassType<CLASS>
@@ -247,8 +237,8 @@ class MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARMS...>
                 (this->m_object->*this->m_member)(std::forward<PARMS>(args)...);
         }
         constexpr auto
-        operator==(MemberCall const &other) const noexcept -> bool {
-                return this->m_object == other.m_object && this->m_member == other.m_member;
+        operator==(const Caller<PARMS...> &other) const noexcept -> bool {
+                return hash() == other.hash();
         }
         constexpr auto
         operator!=(MemberCall const &other) const noexcept -> bool {
@@ -317,8 +307,8 @@ class MemberCall<VoidReturnCode, Constant, NoException, CLASS>
                 (this->m_object->*this->m_member)();
         }
         constexpr auto
-        operator==(MemberCall const &other) const noexcept -> bool {
-                return this->m_object == other.m_object && this->m_member == other.m_member;
+        operator==(const Caller<> &other) const noexcept -> bool {
+                return hash() == other.hash();
         }
         constexpr auto
         operator!=(MemberCall const &other) const noexcept -> bool {

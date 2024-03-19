@@ -5,4 +5,5 @@
 #include "private/event/resource.hpp"
 #include "private/event/delegate_resource_manager.hpp"
 #include "private/event/subscriber.hpp"
+#include "private/event/delegate.hpp"
 #endif

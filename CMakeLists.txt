@@ -64,6 +64,7 @@ set(eds_private_headers
   "${eds_SOURCE_DIR}/include/private/event/subscriber.hpp"
   "${eds_SOURCE_DIR}/include/private/event/delegate_resource_manager.hpp"
   "${eds_SOURCE_DIR}/include/private/event/call_handler.hpp"
+  "${eds_SOURCE_DIR}/include/private/event/delegate.hpp"
 )
 set(eds_all_headers ${eds_public_headers} ${eds_private_headers})
 ############################################################################################################
@@ -116,6 +117,7 @@ set(eds_test_source
   "${eds_SOURCE_DIR}/test/src/ToolsUGTest.cpp"
   "${eds_SOURCE_DIR}/test/src/MemberCallUGTest.cpp"
   "${eds_SOURCE_DIR}/test/src/CallHandlerUGTest.cpp"
+  "${eds_SOURCE_DIR}/test/src/DelegateUGTest.cpp"
 )
 set(eds_test_headers "${eds_SOURCE_DIR}/test/include/custom_gtest.hpp" ${eds_all_headers})
 add_executable(edsUGTest ${eds_test_source} ${eds_test_headers})

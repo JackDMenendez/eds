@@ -23,7 +23,7 @@ struct DelegateResourceManager<> : public Resource {
         constexpr DelegateResourceManager &operator=(DelegateResourceManager &&) noexcept = default;
         virtual void invoke() noexcept = 0;
         virtual void operator()() noexcept = 0;
-        virtual ~DelegateResourceManager() noexcept = default;
+        virtual ~DelegateResourceManager() noexcept override = default;
 };
 EDS_END_NAMESPACE
 #endif
