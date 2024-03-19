@@ -8,9 +8,9 @@
 #define UT01 1
 #define UT02 2
 #define UT03 3
-class BuildNumber : public ::testing::Test {};
+class BuildNumber : public ::testing::Test { };
 #ifdef UT01
 EDS_GTESTF(ToolsUGTest, UT01, BuildNumber, Present) {
-      EDS_PROBE(EXPECT_GT(EDS_VERSION_BUILD,0) << "Build is larger than 0");
+        EDS_PROBE(EXPECT_GT(EDS_VERSION_BUILD, 0) << "Build is larger than 0");
 }
 #endif

@@ -3,9 +3,9 @@
 #else
 #include "gtest/gtest.h"
 #endif
-#include <memory>
 #include "custom_gtest.hpp"
 #include "private/event/member_call.hpp"
+#include <memory>
 #define UT01 1
 #define UT02 2
 #define UT03 3
@@ -19,30 +19,34 @@ class MemberCallSpecialization : public ::testing::Test {
         virtual void
         TearDown() { }
         class TestClass {
-                int m_total=0;
-                mutable int m_count=0;
+                int m_total = 0;
+                mutable int m_count = 0;
             public:
                 static constexpr int testConstNoParamExpectedValue = 1000;
                 static constexpr int testNoParamExpectedValue = 100;
                 void
                 testMethod(int a, int b) noexcept {
-                      m_total = a + b;
+                        m_total = a + b;
                 }
                 void
                 testNoParamMethod() noexcept {
-                      m_total = testNoParamExpectedValue;
+                        m_total = testNoParamExpectedValue;
                 }
-                void testConstMethod(int a, int b) const noexcept {
-                      m_count = a + b;
+                void
+                testConstMethod(int a, int b) const noexcept {
+                        m_count = a + b;
                 }
-                void testConstNoParamMethod() const noexcept {
-                      m_count = testConstNoParamExpectedValue;
+                void
+                testConstNoParamMethod() const noexcept {
+                        m_count = testConstNoParamExpectedValue;
                 }
-                int getCount() const noexcept {
-                    return m_count;
+                int
+                getCount() const noexcept {
+                        return m_count;
                 }
-                int getTotal() const noexcept {
-                    return m_total;
+                int
+                getTotal() const noexcept {
+                        return m_total;
                 }
         };
 };
@@ -55,11 +59,11 @@ EDS_GTESTF(MemberCallUGTest, UT01, MemberCallSpecialization, VoidClassParamsNoEx
         EDS_INFO(TYPES) << "Return Type: " << typeid(member_call_type_t::ReturnCode_t).name() << EDS_EOL();
         EDS_INFO(TYPES) << "Exception Regime: " << typeid(member_call_type_t::ExceptionRegime_t).name() << EDS_EOL();
         EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name() << EDS_EOL();
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v)); 
-        EDS_PROBE(EXPECT_FALSE(member_call_type_t::constant_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::void_rc_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::has_params_v)); 
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v));
+        EDS_PROBE(EXPECT_FALSE(member_call_type_t::constant_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::void_rc_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::has_params_v));
         member_call.invoke(1, 2);
         EDS_PROBE(EXPECT_EQ(3, test.getTotal()));
 }
@@ -73,11 +77,11 @@ EDS_GTESTF(MemberCallUGTest, UT02, MemberCallSpecialization, VoidClassNoParamsNo
         EDS_INFO(TYPES) << "Return Type: " << typeid(member_call_type_t::ReturnCode_t).name() << EDS_EOL();
         EDS_INFO(TYPES) << "Exception Regime: " << typeid(member_call_type_t::ExceptionRegime_t).name() << EDS_EOL();
         EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name() << EDS_EOL();
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v)); 
-        EDS_PROBE(EXPECT_FALSE(member_call_type_t::constant_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::void_rc_v)); 
-        EDS_PROBE(EXPECT_FALSE(member_call_type_t::has_params_v)); 
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v));
+        EDS_PROBE(EXPECT_FALSE(member_call_type_t::constant_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::void_rc_v));
+        EDS_PROBE(EXPECT_FALSE(member_call_type_t::has_params_v));
         member_call.invoke();
         EDS_PROBE(EXPECT_EQ(TestClass::testNoParamExpectedValue, test.getTotal()));
 }
@@ -91,11 +95,11 @@ EDS_GTESTF(MemberCallUGTest, UT03, MemberCallSpecialization, VoidClassParamsCons
         EDS_INFO(TYPES) << "Return Type: " << typeid(member_call_type_t::ReturnCode_t).name() << EDS_EOL();
         EDS_INFO(TYPES) << "Exception Regime: " << typeid(member_call_type_t::ExceptionRegime_t).name() << EDS_EOL();
         EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name() << EDS_EOL();
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::constant_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::void_rc_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::has_params_v)); 
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::constant_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::void_rc_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::has_params_v));
         member_call.invoke(1, 2);
         EDS_PROBE(EXPECT_EQ(3, test.getCount()));
 }
@@ -110,11 +114,11 @@ EDS_GTESTF(MemberCallUGTest, UT04, MemberCallSpecialization, VoidClassConstNoPar
         EDS_INFO(TYPES) << "Return Type: " << typeid(member_call_type_t::ReturnCode_t).name() << EDS_EOL();
         EDS_INFO(TYPES) << "Exception Regime: " << typeid(member_call_type_t::ExceptionRegime_t).name() << EDS_EOL();
         EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name() << EDS_EOL();
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::constant_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v)); 
-        EDS_PROBE(EXPECT_TRUE(member_call_type_t::void_rc_v)); 
-        EDS_PROBE(EXPECT_FALSE(member_call_type_t::has_params_v)); 
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::constant_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v));
+        EDS_PROBE(EXPECT_TRUE(member_call_type_t::void_rc_v));
+        EDS_PROBE(EXPECT_FALSE(member_call_type_t::has_params_v));
         member_call.invoke();
         EDS_PROBE(EXPECT_EQ(TestClass::testConstNoParamExpectedValue, test.getCount()));
 }

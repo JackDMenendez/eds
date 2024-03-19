@@ -3,9 +3,9 @@
 #else
 #include "gtest/gtest.h"
 #endif
-#include <memory>
 #include "custom_gtest.hpp"
 #include "private/eds_hash.hpp"
+#include <memory>
 #define UT01 1
 #define UT02 2
 #define UT03 3
@@ -53,9 +53,8 @@ class HashFixture : public ::testing::Test {
 #ifdef UT01
 EDS_GTESTF(HashUGTest, UT01, HashFixture, LookForDuplicates) {
         run_test();
-              constexpr int expected_duplicates = 0;
+        constexpr int expected_duplicates = 0;
         EDS_PROBE(EXPECT_EQ(expected_duplicates, found_duplicates)
-              << "expect: " << expected_duplicates << " duplicates, found: " << found_duplicates
-              << " duplicates.");
+                  << "expect: " << expected_duplicates << " duplicates, found: " << found_duplicates << " duplicates.");
 }
 #endif
