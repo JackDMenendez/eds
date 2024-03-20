@@ -2,13 +2,14 @@
 #define TRAITS_HPP
 #include "eds_util.hpp"
 #include <type_traits>
+#include <tuple>
 EDS_BEGIN_NAMESPACE
 class PSuedoObject {
-    public:
-        PSuedoObject() = delete;
-        PSuedoObject(const PSuedoObject &) = delete;
-        PSuedoObject &operator=(const PSuedoObject &) = delete;
-        virtual ~PSuedoObject() = 0;
+   public:
+     PSuedoObject() = delete;
+     PSuedoObject(const PSuedoObject &) = delete;
+     PSuedoObject &operator=(const PSuedoObject &) = delete;
+     virtual ~PSuedoObject() = 0;
 };
 /**
  * @brief Macro that declares a psuedo object.
@@ -17,14 +18,14 @@ class PSuedoObject {
  *
  * @param DUMMY The name of the psuedo object.
  */
-#define EDS_CREATE_PSUEDO(CHILD, PARENT)                                                                               \
-        class CHILD : PARENT {                                                                                         \
-            public:                                                                                                    \
-                CHILD() = delete;                                                                                      \
-                CHILD(const CHILD &) = delete;                                                                         \
-                CHILD &operator=(const CHILD &) = delete;                                                              \
-                virtual ~CHILD() = 0;                                                                                  \
-        }
+#define EDS_CREATE_PSUEDO(CHILD, PARENT)                                                           \
+     class CHILD : PARENT {                                                                        \
+        public:                                                                                    \
+          CHILD() = delete;                                                                        \
+          CHILD(const CHILD &) = delete;                                                           \
+          CHILD &operator=(const CHILD &) = delete;                                                \
+          virtual ~CHILD() = 0;                                                                    \
+     }
 
 /**
  * @brief A psuedo return code that is used to indicate that a function does not return a value.
@@ -44,48 +45,75 @@ EDS_CREATE_PSUEDO(VoidParams, PSuedoObject);
  * See @ref edc_traits_psuedo_objects "Psuedo Objects"
  */
 EDS_CREATE_PSUEDO(VoidObject, PSuedoObject);
-EDS_CREATE_PSUEDO(ConstantSpecification, PSuedoObject);
+EDS_CREATE_PSUEDO(PseudoConstantSpecification, PSuedoObject);
 EDS_CREATE_PSUEDO(ExceptionRegime, PSuedoObject);
-EDS_CREATE_PSUEDO(NotConstant, ConstantSpecification);
-EDS_CREATE_PSUEDO(Constant, ConstantSpecification);
+EDS_CREATE_PSUEDO(NotConstant, PseudoConstantSpecification);
+EDS_CREATE_PSUEDO(Constant, PseudoConstantSpecification);
 EDS_CREATE_PSUEDO(YesException, ExceptionRegime);
 EDS_CREATE_PSUEDO(NoException, ExceptionRegime);
 EDS_CREATE_PSUEDO(ResourceHandlingRegime, PSuedoObject);
-EDS_CREATE_PSUEDO(MemberPointer, ResourceHandlingRegime);
+EDS_CREATE_PSUEDO(PsuedoMemberPointer, ResourceHandlingRegime);
 EDS_CREATE_PSUEDO(FunctionPointer, ResourceHandlingRegime);
 EDS_CREATE_PSUEDO(LambdaRef, ResourceHandlingRegime);
 EDS_CREATE_PSUEDO(FunctionType, ResourceHandlingRegime);
-template <typename T> struct is_psuedo : public std::false_type { };
-template <> struct is_psuedo<VoidReturnCode> : public std::true_type { };
-template <> struct is_psuedo<VoidParams> : public std::true_type { };
-template <> struct is_psuedo<VoidObject> : public std::true_type { };
-template <> struct is_psuedo<ConstantSpecification> : public std::true_type { };
-template <> struct is_psuedo<NotConstant> : public std::true_type { };
-template <> struct is_psuedo<Constant> : public std::true_type { };
-template <> struct is_psuedo<ResourceHandlingRegime> : public std::true_type { };
-template <> struct is_psuedo<MemberPointer> : public std::true_type { };
-template <> struct is_psuedo<FunctionPointer> : public std::true_type { };
-template <> struct is_psuedo<ExceptionRegime> : public std::true_type { };
-template <> struct is_psuedo<LambdaRef> : public std::true_type { };
-template <> struct is_psuedo<FunctionType> : public std::true_type { };
-template <> struct is_psuedo<YesException> : public std::true_type { };
-template <> struct is_psuedo<NoException> : public std::true_type { };
+template <typename T> struct is_psuedo : public std::false_type {};
+template <> struct is_psuedo<VoidReturnCode> : public std::true_type {};
+template <> struct is_psuedo<VoidParams> : public std::true_type {};
+template <> struct is_psuedo<VoidObject> : public std::true_type {};
+template <> struct is_psuedo<PseudoConstantSpecification> : public std::true_type {};
+template <> struct is_psuedo<NotConstant> : public std::true_type {};
+template <> struct is_psuedo<Constant> : public std::true_type {};
+template <> struct is_psuedo<ResourceHandlingRegime> : public std::true_type {};
+template <> struct is_psuedo<PsuedoMemberPointer> : public std::true_type {};
+template <> struct is_psuedo<FunctionPointer> : public std::true_type {};
+template <> struct is_psuedo<ExceptionRegime> : public std::true_type {};
+template <> struct is_psuedo<LambdaRef> : public std::true_type {};
+template <> struct is_psuedo<FunctionType> : public std::true_type {};
+template <> struct is_psuedo<YesException> : public std::true_type {};
+template <> struct is_psuedo<NoException> : public std::true_type {};
 template <typename T> constexpr static bool is_psuedo_v = is_psuedo<T>::value;
 template <typename T>
-constexpr static bool is_constant_specification_v = std::is_base_of<ConstantSpecification, T>::value;
-template <typename T> constexpr static bool is_member_pointer_v = std::is_same_v<T, MemberPointer>;
-template <typename T> constexpr static bool is_function_pointer_v = std::is_same_v<T, FunctionPointer>;
+constexpr static bool is_psuedo_constant_specification_v =
+    std::is_base_of<PseudoConstantSpecification, T>::value;
+template <typename T>
+constexpr static bool is_member_pointer_v = std::is_same_v<T, PsuedoMemberPointer>;
+template <typename T>
+constexpr static bool is_psuedo_function_pointer_v = std::is_same_v<T, FunctionPointer>;
 template <typename T>
 constexpr static bool is_resource_handling_regime_v = std::is_base_of_v<ResourceHandlingRegime, T>;
-template <typename T> struct is_constant : public std::false_type { };
-template <> struct is_constant<Constant> : public std::true_type { };
-template <typename T> struct is_noexcept : public std::false_type { };
-template <> struct is_noexcept<NoException> : public std::true_type { };
+template <typename T> struct is_constant : public std::false_type {};
+template <> struct is_constant<Constant> : public std::true_type {};
+template <typename T> struct is_noexcept : public std::false_type {};
+template <> struct is_noexcept<NoException> : public std::true_type {};
 template <typename T> constexpr static bool is_noexcept_v = is_noexcept<T>::value;
 template <typename T> constexpr static bool is_constant_v = is_constant<T>::value;
-template <typename T> constexpr static bool is_exception_specification_v = std::is_base_of<ExceptionRegime, T>::value;
-template <typename T> struct is_void_return_code : public std::false_type { };
-template <> struct is_void_return_code<VoidReturnCode> : public std::true_type { };
+template <typename T>
+constexpr static bool is_exception_specification_v = std::is_base_of<ExceptionRegime, T>::value;
+template <typename T> struct is_void_return_code : public std::false_type {};
+template <> struct is_void_return_code<VoidReturnCode> : public std::true_type {};
 template <typename T> constexpr static bool is_void_return_code_v = is_void_return_code<T>::value;
+// template <typename T> bool is_pointer_to_regular_function_v = ;
+template <class...> struct FunctionTypeChecker;
+template <class RC, class... PARAMS> struct FunctionTypeChecker<RC(PARAMS...) noexcept> {
+    using ReturnType_t = void;
+    using ParameterList_t = std::tuple<PARAMS...>;
+    constexpr static bool is_function_pointer_v = false;
+    constexpr static bool is_member_pointer_v = false;
+    constexpr static bool is_return_code_void_v = std::is_void_v<RC>;
+    constexpr static bool is_noexcept_v = true;
+    constexpr static bool is_constant_v = false;
+    constexpr static bool is_function_v = true;
+};
+template <class RC, class... PARAMS> struct FunctionTypeChecker<RC(PARAMS...)> {
+    using ReturnType_t = RC;
+    using ParameterList_t = std::tuple<PARAMS...>;
+    constexpr static bool is_function_pointer_v = false;
+    constexpr static bool is_member_pointer_v = false;
+    constexpr static bool is_return_code_void_v = std::is_void_v<RC>;
+    constexpr static bool is_noexcept_v = false;
+    constexpr static bool is_constant_v = false;
+    constexpr static bool is_function_v = true;
+    static_assert(is_noexcept_v, "Only functions with noexcept are supported as Delegates.");
+};
 EDS_END_NAMESPACE
 #endif

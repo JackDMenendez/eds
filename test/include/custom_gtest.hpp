@@ -25,6 +25,6 @@
 /// @param UTID The unique identifier of the test case
 /// @param FIXTURE The name of the fixture class for TEST_F
 /// @param DESCRIPTION The description of the test case without spaces or underscores
-#define EDS_GTESTF(UNIT, UTID, FIXTURE, DESCRIPTION) \
-        TEST_F(FIXTURE, EDS_CONCAT(UNIT,EDS_CONCAT(UTID,DESCRIPTION))) 
+#define EDS_GTESTF(UNIT, FIXTURE, DESCRIPTION) \
+        TEST_F(FIXTURE, EDS_CONCAT(UNIT, EDS_CONCAT(__LINE__, DESCRIPTION)))
 #endif

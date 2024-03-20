@@ -118,7 +118,7 @@ set(eds_test_source
   "${eds_SOURCE_DIR}/test/src/MemberCallUGTest.cpp"
   "${eds_SOURCE_DIR}/test/src/CallHandlerUGTest.cpp"
   "${eds_SOURCE_DIR}/test/src/DelegateUGTest.cpp"
-)
+ "test/src/ConceptsUGTest.cpp")
 set(eds_test_headers "${eds_SOURCE_DIR}/test/include/custom_gtest.hpp" ${eds_all_headers})
 add_executable(edsUGTest ${eds_test_source} ${eds_test_headers})
 target_include_directories(
