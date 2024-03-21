@@ -22,7 +22,9 @@ class MemberCallSpecialization : public ::testing::Test {
           void testMethod(int a, int b) noexcept { m_total = a + b; }
           void testNoParamMethod() noexcept { m_total = testNoParamExpectedValue; }
           void testConstMethod(int a, int b) const noexcept { m_count = a + b; }
-          void testConstNoParamMethod() const noexcept { m_count = testConstNoParamExpectedValue; }
+          void testConstNoParamMethod() const noexcept {
+               m_count = testConstNoParamExpectedValue;
+          }
           int getCount() const noexcept { return m_count; }
           int getTotal() const noexcept { return m_total; }
      };
@@ -31,12 +33,14 @@ EDS_GTESTF(MemberCallUGTest, MemberCallSpecialization, VoidClassParamsNoExcept) 
      TestClass test;
      auto member_call = EDS create_method_call(&test, &TestClass::testMethod);
      using member_call_type_t = decltype(member_call);
-     EDS_INFO(TYPES) << "Method Type: " << typeid(member_call_type_t::Member_t).name() << EDS_EOL();
+     EDS_INFO(TYPES) << "Method Type: " << typeid(member_call_type_t::Member_t).name()
+                     << EDS_EOL();
      EDS_INFO(TYPES) << "Return Type: " << typeid(member_call_type_t::ReturnCode_t).name()
                      << EDS_EOL();
-     EDS_INFO(TYPES) << "Exception Regime: " << typeid(member_call_type_t::ExceptionRegime_t).name()
+     EDS_INFO(TYPES) << "Exception Regime: "
+                     << typeid(member_call_type_t::ExceptionRegime_t).name() << EDS_EOL();
+     EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name()
                      << EDS_EOL();
-     EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name() << EDS_EOL();
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v));
      EDS_PROBE(EXPECT_FALSE(member_call_type_t::constant_v));
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v));
@@ -49,12 +53,14 @@ EDS_GTESTF(MemberCallUGTest, MemberCallSpecialization, VoidClassNoParamsNoExcept
      TestClass test;
      auto member_call = EDS create_method_call(&test, &TestClass::testNoParamMethod);
      using member_call_type_t = decltype(member_call);
-     EDS_INFO(TYPES) << "Method Type: " << typeid(member_call_type_t::Member_t).name() << EDS_EOL();
+     EDS_INFO(TYPES) << "Method Type: " << typeid(member_call_type_t::Member_t).name()
+                     << EDS_EOL();
      EDS_INFO(TYPES) << "Return Type: " << typeid(member_call_type_t::ReturnCode_t).name()
                      << EDS_EOL();
-     EDS_INFO(TYPES) << "Exception Regime: " << typeid(member_call_type_t::ExceptionRegime_t).name()
+     EDS_INFO(TYPES) << "Exception Regime: "
+                     << typeid(member_call_type_t::ExceptionRegime_t).name() << EDS_EOL();
+     EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name()
                      << EDS_EOL();
-     EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name() << EDS_EOL();
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v));
      EDS_PROBE(EXPECT_FALSE(member_call_type_t::constant_v));
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v));
@@ -67,12 +73,14 @@ EDS_GTESTF(MemberCallUGTest, MemberCallSpecialization, VoidClassParamsConstNoExc
      TestClass test;
      auto member_call = EDS create_method_call(&test, &TestClass::testConstMethod);
      using member_call_type_t = decltype(member_call);
-     EDS_INFO(TYPES) << "Method Type: " << typeid(member_call_type_t::Member_t).name() << EDS_EOL();
+     EDS_INFO(TYPES) << "Method Type: " << typeid(member_call_type_t::Member_t).name()
+                     << EDS_EOL();
      EDS_INFO(TYPES) << "Return Type: " << typeid(member_call_type_t::ReturnCode_t).name()
                      << EDS_EOL();
-     EDS_INFO(TYPES) << "Exception Regime: " << typeid(member_call_type_t::ExceptionRegime_t).name()
+     EDS_INFO(TYPES) << "Exception Regime: "
+                     << typeid(member_call_type_t::ExceptionRegime_t).name() << EDS_EOL();
+     EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name()
                      << EDS_EOL();
-     EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name() << EDS_EOL();
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v));
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::constant_v));
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v));
@@ -86,12 +94,14 @@ EDS_GTESTF(MemberCallUGTest, MemberCallSpecialization, VoidClassConstNoParamsNoE
      TestClass test;
      auto member_call = EDS create_method_call(&test, &TestClass::testConstNoParamMethod);
      using member_call_type_t = decltype(member_call);
-     EDS_INFO(TYPES) << "Method Type: " << typeid(member_call_type_t::Member_t).name() << EDS_EOL();
+     EDS_INFO(TYPES) << "Method Type: " << typeid(member_call_type_t::Member_t).name()
+                     << EDS_EOL();
      EDS_INFO(TYPES) << "Return Type: " << typeid(member_call_type_t::ReturnCode_t).name()
                      << EDS_EOL();
-     EDS_INFO(TYPES) << "Exception Regime: " << typeid(member_call_type_t::ExceptionRegime_t).name()
+     EDS_INFO(TYPES) << "Exception Regime: "
+                     << typeid(member_call_type_t::ExceptionRegime_t).name() << EDS_EOL();
+     EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name()
                      << EDS_EOL();
-     EDS_INFO(TYPES) << "Class Type: " << typeid(member_call_type_t::Class_t).name() << EDS_EOL();
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::is_legit_v));
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::constant_v));
      EDS_PROBE(EXPECT_TRUE(member_call_type_t::noexcept_v));

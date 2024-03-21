@@ -4,7 +4,7 @@
 #include <type_traits>
 EDS_BEGIN_NAMESPACE
 template <class T>
-concept SomeClassType = std::is_class<T>::value;
+concept some_class_type = std::is_class<T>::value;
 /// @brief A concept that checks if a type is psuedo class specifying constant or no constant
 /// call
 template <class T>
@@ -31,6 +31,26 @@ concept lamda_rc_is_void =
 template <typename FUNC>
 concept has_noexcept = FunctionTypeChecker<FUNC>::is_noexcept_v;
 template <typename FUNC>
-concept has_void_return_code = FunctionTypeChecker<FUNC>::is_void_return_code_v;
+concept has_void_return_code = FunctionTypeChecker<FUNC>::is_return_code_void_v;
+template <typename FUNC>
+concept eligible_delegate = FunctionTypeChecker<FUNC>::is_eligible_delegate_v;
+template <typename FUNC, typename... PARAMS>
+concept a_functor = std::is_invocable_v<FUNC, PARAMS...>;
+/// TODO add following to test
+template <typename FUNC, typename... PARAMS>
+concept a_functor_with_void_rc = std::is_invocable_r_v<void, FUNC, PARAMS...>;
+template <typename FUNC, typename... PARAMS>
+concept a_functor_with_noexcept = std::is_nothrow_invocable_v<FUNC, PARAMS...>;
+template <typename FUNC, typename... PARAMS>
+concept a_functor_with_void_rc_noexcept = a_functor_with_void_rc<FUNC, PARAMS...> &&
+                                         a_functor_with_noexcept<FUNC, PARAMS...>;
+template <typename FUNC, typename... PARAMS>
+concept a_member_function = std::is_member_function_pointer_v<FUNC>;
+template <typename FUNC, typename... PARAMS>
+concept a_member_object = std::is_member_object_pointer_v<FUNC>;
+template <typename FUNC, typename... PARAMS>
+concept a_member = FunctionTypeChecker<FUNC>::is_member_v;
+template <typename FUNC, typename... PARAMS>
+concept a_const_member = FunctionTypeChecker<FUNC>::is_constant_v;
 EDS_END_NAMESPACE
 #endif

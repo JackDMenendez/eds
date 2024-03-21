@@ -11,8 +11,8 @@ EDS_BEGIN_NAMESPACE
 #define EDS_CONCAT(LHS, RHS) EDS_CONCATINATE(LHS, RHS)
 #endif
 #ifndef EDS_EOL
-/// End of line character, the character literal is efficient that a string literal, std::endl also
-/// does a flush.
+/// End of line character, the character literal is efficient that a string literal, std::endl
+/// also does a flush.
 #define EDS_EOL() '\n'
 #endif
 EDS_END_NAMESPACE

@@ -24,7 +24,9 @@ class DelegateSpecializationFT : public ::testing::Test {
           void testMethod(int a, int b) noexcept { m_total = a + b; }
           void testNoParamMethod() noexcept { m_total = testNoParamExpectedValue; }
           void testConstMethod(int a, int b) const noexcept { m_count = a + b; }
-          void testConstNoParamMethod() const noexcept { m_count = testConstNoParamExpectedValue; }
+          void testConstNoParamMethod() const noexcept {
+               m_count = testConstNoParamExpectedValue;
+          }
           int getCount() const noexcept { return m_count; }
           int getTotal() const noexcept { return m_total; }
      };

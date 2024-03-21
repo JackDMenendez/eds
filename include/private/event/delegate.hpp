@@ -1,10 +1,10 @@
 #ifndef DELEGATE_HPP
 #define DELEGATE_HPP
+#include "../eds_concepts.hpp"
+#include "../eds_traits.hpp"
 #include "call_handler.hpp"
 #include "subscriber.hpp"
 #include <memory>
-#include "../eds_traits.hpp"
-#include "../eds_concepts.hpp"
 EDS_BEGIN_NAMESPACE
 template <class... SIGNATURE> class Delegate;
 template <class... PARMS>
@@ -17,7 +17,8 @@ class Delegate<void(PARMS...) noexcept> : public DelegateResourceManager<PARMS..
      local_shared_ptr_t m_managed_CallHandler;
      constexpr Delegate() noexcept = default;
      template <class CALLBACK>
-     requires a_function<CALLBACK> && has_noexcept<CALLBACK> 
+          requires a_function<CALLBACK> && has_noexcept<CALLBACK> &&
+                   has_void_return_code<CALLBACK> && eligible_delegate<CALLBACK>
      constexpr explicit Delegate(CALLBACK const *callback) noexcept
          : m_managed_CallHandler(
                std::make_shared<CallHandler<FunctionPointer, PARMS...>>(callback, this)) {}
@@ -35,22 +36,22 @@ class Delegate<void(PARMS...) noexcept> : public DelegateResourceManager<PARMS..
          : m_managed_CallHandler(m_managed_CallHandler) {}
      constexpr bool operator==(const Delegate &other) const noexcept {
           return m_managed_CallHandler == other.m_managed_CallHandler;
-          }
+     }
      constexpr bool operator!=(const Delegate &other) const noexcept {
-           return m_managed_CallHandler != other.m_managed_CallHandler;
-       }
+          return m_managed_CallHandler != other.m_managed_CallHandler;
+     }
      constexpr bool operator==(const ResourceManagerType &other) const noexcept {
-            return m_managed_CallHandler == other.m_managed_CallHandler;
-            }
+          return m_managed_CallHandler == other.m_managed_CallHandler;
+     }
      constexpr bool operator!=(const ResourceManagerType &other) const noexcept {
-               return m_managed_CallHandler != other.m_managed_CallHandler;
-               }
+          return m_managed_CallHandler != other.m_managed_CallHandler;
+     }
      constexpr bool equals(const Delegate &other) const noexcept {
-           return m_managed_CallHandler == other.m_managed_CallHandler;
-       }
+          return m_managed_CallHandler == other.m_managed_CallHandler;
+     }
      constexpr bool equals(const ResourceManagerType &other) const noexcept {
-                return m_managed_CallHandler == other.m_managed_CallHandler;
-            }
+          return m_managed_CallHandler == other.m_managed_CallHandler;
+     }
      bool equals(const Resource &other) const noexcept override {
           return get_subscriber_id() == other.get_subscriber_id();
      }
@@ -68,7 +69,6 @@ class Delegate<void(PARMS...) noexcept> : public DelegateResourceManager<PARMS..
      template <class CALLBACK> constexpr static auto make_delegate(CALLBACK &&callback) {
           return Delegate(std::forward<CALLBACK>(callback));
      }
-
 };
 EDS_END_NAMESPACE
 #endif

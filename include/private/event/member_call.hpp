@@ -32,7 +32,8 @@ template <> struct Caller<> {
      virtual ~Caller() noexcept = default;
 };
 template <typename... SIGNATURE> class MemberCallBase;
-template <typename RC, typename CONSTANT, typename EXCEPT_REGIME, typename CLASS, typename... PARMS>
+template <typename RC, typename CONSTANT, typename EXCEPT_REGIME, typename CLASS,
+          typename... PARMS>
 struct MemberCallBase<RC, CONSTANT, EXCEPT_REGIME, CLASS, PARMS...> : public Caller<PARMS...> {
    public:
      constexpr MemberCallBase() noexcept = default;
@@ -72,7 +73,7 @@ struct MemberCallBase<RC, CONSTANT, EXCEPT_REGIME, CLASS> : public Caller<> {
 };
 template <typename... FOOTPRINT> class MemberCall;
 template <class CLASS, class... PARMS>
-     requires SomeClassType<CLASS>
+     requires some_class_type<CLASS>
 class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...>
     : public MemberCallBase<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...> {
    public:
@@ -102,7 +103,9 @@ class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...>
           this->m_member = other.m_member;
           return *this;
      }
-     size_t hash() const noexcept override { return hash_to_64_bits(hash_object, hash_member); }
+     size_t hash() const noexcept override {
+          return hash_to_64_bits(hash_object, hash_member);
+     }
      constexpr void operator()(PARMS... args) noexcept override {
           (this->m_object->*this->m_member)(std::forward<PARMS>(args)...);
      }
@@ -118,7 +121,7 @@ class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...>
      constexpr ~MemberCall() noexcept {}
 };
 template <class CLASS>
-     requires SomeClassType<CLASS>
+     requires some_class_type<CLASS>
 class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>
     : public MemberCallBase<VoidReturnCode, NotConstant, NoException, CLASS> {
    public:
@@ -137,7 +140,9 @@ class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>
      };
 
    public:
-     size_t hash() const noexcept override { return hash_to_64_bits(hash_object, hash_member); }
+     size_t hash() const noexcept override {
+          return hash_to_64_bits(hash_object, hash_member);
+     }
 
      constexpr MemberCall(CLASS *object, void (CLASS::*member)() noexcept) noexcept
          : m_object(object), m_member(member) {}
@@ -161,7 +166,7 @@ class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>
      constexpr ~MemberCall() noexcept = default;
 };
 template <class CLASS, class... PARMS>
-     requires SomeClassType<CLASS>
+     requires some_class_type<CLASS>
 class MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARMS...>
     : public MemberCallBase<VoidReturnCode, Constant, NoException, CLASS, PARMS...> {
    public:
@@ -180,7 +185,9 @@ class MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARMS...>
      };
 
    public:
-     size_t hash() const noexcept override { return hash_to_64_bits(hash_object, hash_member); }
+     size_t hash() const noexcept override {
+          return hash_to_64_bits(hash_object, hash_member);
+     }
 
      constexpr MemberCall(const CLASS &&object,
                           void (CLASS::*member)(PARMS...) const noexcept) noexcept
@@ -220,7 +227,7 @@ class MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARMS...>
      constexpr ~MemberCall() noexcept {}
 };
 template <class CLASS>
-     requires SomeClassType<CLASS>
+     requires some_class_type<CLASS>
 class MemberCall<VoidReturnCode, Constant, NoException, CLASS>
     : public MemberCallBase<VoidReturnCode, Constant, NoException, CLASS> {
    public:
@@ -239,13 +246,16 @@ class MemberCall<VoidReturnCode, Constant, NoException, CLASS>
      };
 
    public:
-     size_t hash() const noexcept override { return hash_to_64_bits(hash_object, hash_member); }
+     size_t hash() const noexcept override {
+          return hash_to_64_bits(hash_object, hash_member);
+     }
 
      constexpr MemberCall(const CLASS *object, void (CLASS::*member)() const noexcept) noexcept
          : m_object(object), m_member(member) {}
      constexpr MemberCall(const CLASS &object, void (CLASS::*member)() const noexcept) noexcept
          : m_object(&object), m_member(member) {}
-     constexpr MemberCall(const CLASS &&object, void (CLASS::*member)() const noexcept) noexcept
+     constexpr MemberCall(const CLASS &&object,
+                          void (CLASS::*member)() const noexcept) noexcept
          : m_object(&object), m_member(member) {}
 
      constexpr MemberCall(const MemberCall &other) noexcept
@@ -278,14 +288,18 @@ class MemberCall<VoidReturnCode, Constant, NoException, CLASS>
      constexpr ~MemberCall() noexcept {}
 };
 template <typename CLASS, typename... PARMS>
-constexpr auto create_method_call(CLASS *object, void (CLASS::*member)(PARMS...) noexcept) noexcept
+constexpr auto create_method_call(CLASS *object,
+                                  void (CLASS::*member)(PARMS...) noexcept) noexcept
     -> MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...> {
-     return MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...>(object, member);
+     return MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...>(object,
+                                                                                  member);
 }
 template <typename CLASS, typename... PARMS>
-constexpr auto create_method_call(CLASS &object, void (CLASS::*member)(PARMS...) noexcept) noexcept
+constexpr auto create_method_call(CLASS &object,
+                                  void (CLASS::*member)(PARMS...) noexcept) noexcept
     -> MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...> {
-     return MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...>(&object, member);
+     return MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...>(&object,
+                                                                                  member);
 }
 template <typename CLASS>
 constexpr auto create_method_call(CLASS &object, void (CLASS::*member)() noexcept) noexcept
@@ -301,7 +315,8 @@ template <typename CLASS, typename... PARMS>
 constexpr auto create_method_call(const CLASS &object,
                                   void (CLASS::*member)(PARMS...) const noexcept) noexcept
     -> MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARMS...> {
-     return MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARMS...>(&object, member);
+     return MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARMS...>(&object,
+                                                                               member);
 }
 template <typename CLASS, typename... PARMS>
 constexpr auto create_method_call(const CLASS *object,
@@ -326,7 +341,8 @@ constexpr auto create_method_call(const CLASS &object,
 /// @see
 /// edsUGTest.MemberCallUGTest.MemberCallUGTest4VoidClassConstNoParamsNoExcept
 template <typename CLASS>
-constexpr auto create_method_call(CLASS *object, void (CLASS::*member)() const noexcept) noexcept
+constexpr auto create_method_call(CLASS *object,
+                                  void (CLASS::*member)() const noexcept) noexcept
     -> MemberCall<VoidReturnCode, Constant, NoException, CLASS> {
      return MemberCall<VoidReturnCode, Constant, NoException, CLASS>(object, member);
 }

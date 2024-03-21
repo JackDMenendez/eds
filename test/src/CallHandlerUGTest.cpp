@@ -89,8 +89,8 @@ int CallHandlerTF::sm_total = 0;
 /// tests the creation of an eds::CallHandler for a static delegate with parameters.
 EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, VoidParamsNoexcept) {
      EDS_INFO(TYPES) << "CallHandler Type: " << typeid(AdderTestWrapper_t).name() << EDS_EOL();
-     EDS_INFO(TYPES) << "Call Back Function Type: " << typeid(AdderTestWrapper_t::CallBack_t).name()
-                     << EDS_EOL();
+     EDS_INFO(TYPES) << "Call Back Function Type: "
+                     << typeid(AdderTestWrapper_t::CallBack_t).name() << EDS_EOL();
      const bool expected_CallBack_type_comparison_result = true;
      bool actual_CallBack_type_comparison_result =
          std::is_same_v<TestAdderResource::Equivalent_t, AdderTestWrapper_t::CallBack_t>;
@@ -105,12 +105,14 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, VoidParamsNoexcept) {
 /// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidNoparamsNoexcept
 /// tests the creation of an eds::CallHandler for a static delegate without parameters.
 EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, VoidNoparamsNoexcept) {
-     EDS_INFO(TYPES) << "CallHandler Type: " << typeid(IncrementTestWrapper_t).name() << EDS_EOL();
+     EDS_INFO(TYPES) << "CallHandler Type: " << typeid(IncrementTestWrapper_t).name()
+                     << EDS_EOL();
      EDS_INFO(TYPES) << "Call Back Function Type: "
                      << typeid(IncrementTestWrapper_t::CallBack_t).name() << EDS_EOL();
      const bool expected_CallBack_type_comparison_result = true;
      bool actual_CallBack_type_comparison_result =
-         std::is_same_v<IncrementMockResource::Equivalent_t, IncrementTestWrapper_t::CallBack_t>;
+         std::is_same_v<IncrementMockResource::Equivalent_t,
+                        IncrementTestWrapper_t::CallBack_t>;
      EDS_PROBE(EXPECT_EQ(expected_CallBack_type_comparison_result,
                          actual_CallBack_type_comparison_result));
      IncrementMockResource resource;
@@ -149,8 +151,8 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidParamsConstNoexcept) {
                          actual_CallBack_type_comparison_result));
      TestAdderResource resource;
      TestSubscriberClass subscriber_class;
-     AdderMemberTestWrapper_t ch(&subscriber_class, &TestSubscriberClass::adderTestFunctionConst,
-                                 &resource);
+     AdderMemberTestWrapper_t ch(&subscriber_class,
+                                 &TestSubscriberClass::adderTestFunctionConst, &resource);
      EDS_INFO(TYPES) << "Member Call Type: " << typeid(ch).name() << EDS_EOL();
      ch(1, 2);
      EDS_PROBE(EXPECT_EQ(3, subscriber_class.get_mutable_total()));
@@ -158,8 +160,8 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidParamsConstNoexcept) {
 EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidNoexcept) {
      TestIncrementResource resource;
      TestSubscriberClass subscriber_class;
-     IncrementMemberTestWrapper_t ch(&subscriber_class, &TestSubscriberClass::incrementTestFunction,
-                                     &resource);
+     IncrementMemberTestWrapper_t ch(&subscriber_class,
+                                     &TestSubscriberClass::incrementTestFunction, &resource);
      EDS_INFO(TYPES) << "Member Call Type: " << typeid(ch).name() << EDS_EOL();
      ch();
      EDS_PROBE(EXPECT_EQ(1, subscriber_class.get_total()));
@@ -167,8 +169,8 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidNoexcept) {
 EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidConstNoexcept) {
      TestIncrementResource resource;
      TestSubscriberClass subscriber_class;
-     IncrementMemberTestWrapper_t ch(&subscriber_class,
-                                     &TestSubscriberClass::incrementTestFunctionConst, &resource);
+     IncrementMemberTestWrapper_t ch(
+         &subscriber_class, &TestSubscriberClass::incrementTestFunctionConst, &resource);
      EDS_INFO(TYPES) << "Member Call Type: " << typeid(ch).name() << EDS_EOL();
      ch();
      EDS_PROBE(EXPECT_EQ(1, subscriber_class.get_mutable_total()));

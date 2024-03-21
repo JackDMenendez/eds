@@ -50,6 +50,6 @@ EDS_GTESTF(HashUGTest, HashFixture, LookForDuplicates) {
      run_test();
      constexpr int expected_duplicates = 0;
      EDS_PROBE(EXPECT_EQ(expected_duplicates, found_duplicates)
-               << "expect: " << expected_duplicates << " duplicates, found: " << found_duplicates
-               << " duplicates.");
+               << "expect: " << expected_duplicates
+               << " duplicates, found: " << found_duplicates << " duplicates.");
 }

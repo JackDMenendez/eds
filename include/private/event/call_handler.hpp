@@ -43,8 +43,12 @@ class CallHandler<LambdaRef, LAMBDA, PARAMS...> : public Subscriber<PARAMS...> {
           m_call_back(std::forward<PARAMS>(args)...);
      }
 
-     void invoke(PARAMS... args) noexcept override { m_call_back(std::forward<PARAMS>(args)...); }
-     bool equals(const SubscriberBase &other) const noexcept override { return id() == other.id(); }
+     void invoke(PARAMS... args) noexcept override {
+          m_call_back(std::forward<PARAMS>(args)...);
+     }
+     bool equals(const SubscriberBase &other) const noexcept override {
+          return id() == other.id();
+     }
      size_t id() const noexcept override { return m_resource_id; }
      ~CallHandler() noexcept override = default;
 };
@@ -73,8 +77,12 @@ class CallHandler<FunctionPointer, PARAMS...> : public Subscriber<PARAMS...> {
           m_call_back(std::forward<PARAMS>(args)...);
      }
 
-     void invoke(PARAMS... args) noexcept override { m_call_back(std::forward<PARAMS>(args)...); }
-     bool equals(const SubscriberBase &other) const noexcept override { return id() == other.id(); }
+     void invoke(PARAMS... args) noexcept override {
+          m_call_back(std::forward<PARAMS>(args)...);
+     }
+     bool equals(const SubscriberBase &other) const noexcept override {
+          return id() == other.id();
+     }
      size_t id() const noexcept override { return m_resource_id; }
      ~CallHandler() noexcept override = default;
 };
@@ -104,8 +112,12 @@ class CallHandler<FunctionType, PARAMS...> : public Subscriber<PARAMS...> {
           m_call_back(std::forward<PARAMS>(args)...);
      }
 
-     void invoke(PARAMS... args) noexcept override { m_call_back(std::forward<PARAMS>(args)...); }
-     bool equals(const SubscriberBase &other) const noexcept override { return id() == other.id(); }
+     void invoke(PARAMS... args) noexcept override {
+          m_call_back(std::forward<PARAMS>(args)...);
+     }
+     bool equals(const SubscriberBase &other) const noexcept override {
+          return id() == other.id();
+     }
      size_t id() const noexcept override { return m_resource_id; }
      ~CallHandler() noexcept override = default;
 };
@@ -128,7 +140,7 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
 
    public:
      template <typename CLASS>
-          requires SomeClassType<CLASS>
+          requires some_class_type<CLASS>
      constexpr CallHandler(const CLASS *class_instance,
                            void (CLASS::*call_back)(PARAMS...) const noexcept,
                            delegate_Resource_manager_t *d) noexcept
@@ -139,7 +151,7 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
           m_resource_id = m_call_back->hash();
      }
      template <typename CLASS>
-          requires SomeClassType<CLASS>
+          requires some_class_type<CLASS>
      constexpr CallHandler(CLASS *class_instance, void (CLASS::*call_back)(PARAMS...) noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(std::make_shared<
@@ -150,7 +162,7 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
      }
 
      template <typename CLASS>
-          requires SomeClassType<CLASS>
+          requires some_class_type<CLASS>
      constexpr CallHandler(CLASS &class_instance, void (CLASS::*call_back)(PARAMS...) noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(std::make_shared<
@@ -160,7 +172,7 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
           m_resource_id = m_call_back->hash();
      }
      template <typename CLASS>
-          requires SomeClassType<CLASS>
+          requires some_class_type<CLASS>
      constexpr CallHandler(const CLASS &class_instance,
                            void (CLASS::*call_back)(PARAMS...) const noexcept,
                            delegate_Resource_manager_t *d) noexcept
@@ -172,8 +184,9 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
      }
 
      template <typename CLASS>
-          requires SomeClassType<CLASS>
-     constexpr CallHandler(CLASS &&class_instance, void (CLASS::*call_back)(PARAMS...) noexcept,
+          requires some_class_type<CLASS>
+     constexpr CallHandler(CLASS &&class_instance,
+                           void (CLASS::*call_back)(PARAMS...) noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(std::make_shared<
                        MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARAMS...>>(
@@ -182,7 +195,7 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
           m_resource_id = m_call_back->hash();
      }
      template <typename CLASS>
-          requires SomeClassType<CLASS>
+          requires some_class_type<CLASS>
      constexpr CallHandler(const CLASS &&class_instance,
                            void (CLASS::*call_back)(PARAMS...) const noexcept,
                            delegate_Resource_manager_t *d) noexcept
@@ -202,7 +215,9 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
      void invoke(PARAMS... args) noexcept override {
           m_call_back->invoke(std::forward<PARAMS>(args)...);
      }
-     bool equals(const SubscriberBase &other) const noexcept override { return id() == other.id(); }
+     bool equals(const SubscriberBase &other) const noexcept override {
+          return id() == other.id();
+     }
      size_t id() const noexcept override { return m_resource_id; }
      ~CallHandler() noexcept override = default;
 };
@@ -222,16 +237,17 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
 
    public:
      template <typename CLASS>
-          requires SomeClassType<CLASS>
-     constexpr CallHandler(const CLASS *class_instance, void (CLASS::*call_back)() const noexcept,
+          requires some_class_type<CLASS>
+     constexpr CallHandler(const CLASS *class_instance,
+                           void (CLASS::*call_back)() const noexcept,
                            delegate_Resource_manager_t *d) noexcept
-         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS>(class_instance,
-                                                                                    call_back)),
+         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS>(
+               class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
      }
      template <typename CLASS>
-          requires SomeClassType<CLASS>
+          requires some_class_type<CLASS>
      constexpr CallHandler(CLASS *class_instance, void (CLASS::*call_back)() noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(new MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>(
@@ -241,7 +257,7 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
      }
 
      template <typename CLASS>
-          requires SomeClassType<CLASS>
+          requires some_class_type<CLASS>
      constexpr CallHandler(CLASS &class_instance, void (CLASS::*call_back)() noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(new MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>(
@@ -250,17 +266,18 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
           m_resource_id = m_call_back->hash();
      }
      template <typename CLASS>
-          requires SomeClassType<CLASS>
-     constexpr CallHandler(const CLASS &class_instance, void (CLASS::*call_back)() const noexcept,
+          requires some_class_type<CLASS>
+     constexpr CallHandler(const CLASS &class_instance,
+                           void (CLASS::*call_back)() const noexcept,
                            delegate_Resource_manager_t *d) noexcept
-         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS>(class_instance,
-                                                                                    call_back)),
+         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS>(
+               class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
      }
 
      template <typename CLASS>
-          requires SomeClassType<CLASS>
+          requires some_class_type<CLASS>
      constexpr CallHandler(CLASS &&class_instance, void (CLASS::*call_back)() noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(new MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>(
@@ -269,11 +286,12 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
           m_resource_id = m_call_back->hash();
      }
      template <typename CLASS>
-          requires SomeClassType<CLASS>
-     constexpr CallHandler(const CLASS &&class_instance, void (CLASS::*call_back)() const noexcept,
+          requires some_class_type<CLASS>
+     constexpr CallHandler(const CLASS &&class_instance,
+                           void (CLASS::*call_back)() const noexcept,
                            delegate_Resource_manager_t *d) noexcept
-         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS>(class_instance,
-                                                                                    call_back)),
+         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS>(
+               class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
      }
@@ -283,7 +301,9 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
      void operator()() noexcept override { m_call_back->invoke(); }
 
      void invoke() noexcept override { m_call_back->invoke(); }
-     bool equals(const SubscriberBase &other) const noexcept override { return id() == other.id(); }
+     bool equals(const SubscriberBase &other) const noexcept override {
+          return id() == other.id();
+     }
      size_t id() const noexcept override { return m_resource_id; }
      ~CallHandler() noexcept override = default;
 };
@@ -318,7 +338,9 @@ template <> class CallHandler<FunctionType> : public Subscriber<> {
      void operator()() noexcept override { m_call_back(); }
 
      void invoke() noexcept override { m_call_back(); }
-     bool equals(const SubscriberBase &other) const noexcept override { return id() == other.id(); }
+     bool equals(const SubscriberBase &other) const noexcept override {
+          return id() == other.id();
+     }
      size_t id() const noexcept override { return m_resource_id; }
      ~CallHandler() noexcept override = default;
 };
@@ -337,7 +359,8 @@ template <> class CallHandler<FunctionPointer> : public Subscriber<> {
      Resource *m_resource_manager = nullptr;
 
    public:
-     constexpr CallHandler(void (*call_back)() noexcept, delegate_Resource_manager_t *d) noexcept
+     constexpr CallHandler(void (*call_back)() noexcept,
+                           delegate_Resource_manager_t *d) noexcept
          : m_call_back(call_back), m_resource_manager(d) {}
      template <typename CALLBACK>
      constexpr CallHandler(CALLBACK &call_back, delegate_Resource_manager_t *d) noexcept
@@ -347,7 +370,9 @@ template <> class CallHandler<FunctionPointer> : public Subscriber<> {
      void operator()() noexcept override { m_call_back(); }
 
      void invoke() noexcept override { m_call_back(); }
-     bool equals(const SubscriberBase &other) const noexcept override { return id() == other.id(); }
+     bool equals(const SubscriberBase &other) const noexcept override {
+          return id() == other.id();
+     }
      size_t id() const noexcept override { return m_resource_id; }
      ~CallHandler() noexcept override = default;
 };
@@ -373,7 +398,9 @@ template <class LAMBDA> class CallHandler<LambdaRef, LAMBDA> : public Subscriber
      void operator()() noexcept override { m_call_back(); }
 
      void invoke() noexcept override { m_call_back(); }
-     bool equals(const SubscriberBase &other) const noexcept override { return id() == other.id(); }
+     bool equals(const SubscriberBase &other) const noexcept override {
+          return id() == other.id();
+     }
      size_t id() const noexcept override { return m_resource_id; }
      ~CallHandler() noexcept override = default;
 };
