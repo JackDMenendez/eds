@@ -28,7 +28,7 @@ class ConceptsFT : public ::testing::Test {
           template <typename FUNC>
                requires eds::a_function<FUNC> && eds::has_noexcept<FUNC> &&
                         eds::has_void_return_code<FUNC> && eds::eligible_delegate<FUNC>
-          void setConceptResult(FUNC const *pointer_to_function) const noexcept {
+          void setConceptResult(FUNC *pointer_to_function) const noexcept {
                static_assert(!std::is_member_function_pointer_v<FUNC>);
                static_assert(!std::is_member_object_pointer_v<FUNC>);
 
@@ -42,12 +42,16 @@ class ConceptsFT : public ::testing::Test {
           }
           template <typename FUNC>
                requires eds::RegularFunction<FUNC, PARAMS...>
+          void setConceptResult(FUNC &f) const noexcept {
+               f(ConceptType::regular_function);
+          }template <typename FUNC>
+               requires eds::RegularFunction<FUNC, PARAMS...>
           void setConceptResult(FUNC &&f) const noexcept {
                f(ConceptType::regular_function);
           }
           template <typename FUNC>
                requires eds::some_class_type<FUNC> &&
-                        eds::a_functor<FUNC, ConceptType>
+                        eds::a_functor_with_void_rc<FUNC, ConceptType>
           void setConceptResult(FUNC &&f) const noexcept {
                f(ConceptType::lambda_functor);
           }

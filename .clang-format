@@ -1,6 +1,13 @@
 # Format Style Options - Created with Clang Power Tools
 ---
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: true
+AllowAllConstructorInitializersOnNextLine: true
+AlwaysBreakBeforeMultilineStrings: false
+AlwaysBreakTemplateDeclarations: MultiLine
+BreakBeforeBinaryOperators: None
 BreakBeforeInheritanceComma: false
+BreakInheritanceList: BeforeColon
 BreakBeforeConceptDeclarations: true
 BreakConstructorInitializers: BeforeColon
 ColumnLimit: 95

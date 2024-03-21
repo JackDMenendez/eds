@@ -19,7 +19,7 @@ class Delegate<void(PARMS...) noexcept> : public DelegateResourceManager<PARMS..
      template <class CALLBACK>
           requires a_function<CALLBACK> && has_noexcept<CALLBACK> &&
                    has_void_return_code<CALLBACK> && eligible_delegate<CALLBACK>
-     constexpr explicit Delegate(CALLBACK const *callback) noexcept
+     constexpr explicit Delegate(CALLBACK *callback) noexcept
          : m_managed_CallHandler(
                std::make_shared<CallHandler<FunctionPointer, PARMS...>>(callback, this)) {}
      template <class CALLBACK>
