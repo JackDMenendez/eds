@@ -44,7 +44,7 @@ concept a_functor_with_noexcept = std::is_nothrow_invocable_v<FUNC, PARAMS...>;
 template <typename FUNC, typename... PARAMS>
 concept a_functor_with_void_rc_noexcept = a_functor_with_void_rc<FUNC, PARAMS...> &&
                                          a_functor_with_noexcept<FUNC, PARAMS...>;
-template <typename FUNC, typename... PARAMS>
+template <typename CLASS, typename FUNC, typename... PARAMS>
 concept a_member_function = std::is_member_function_pointer_v<FUNC>;
 template <typename FUNC, typename... PARAMS>
 concept a_member_object = std::is_member_object_pointer_v<FUNC>;

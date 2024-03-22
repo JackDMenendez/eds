@@ -7,6 +7,7 @@
 #include "private/eds_traits.hpp"
 #include <memory>
 #include <private/eds_env.hpp>
+#include <functional>
 class TraitsFT : public ::testing::Test {
    public:
      enum class TraitType : int { regular_function, lambda_functor, member_pointer, function_pointer, none };
@@ -22,15 +23,25 @@ class TraitsFT : public ::testing::Test {
      }
      static void setRegularFunction(TraitType a) noexcept { sm_ConceptType = a; }
      using TestFunction_t = void(TraitType) noexcept;
+     using FunctionalTestFunction_t = std::function<void(TraitType) noexcept>;
      using TestFunctionNoParms_t = void() noexcept;
+     using FunctionalTestFunctionNoParms_t = std::function<void() noexcept>;
      template <class CLASS>
      using TestMember_t = void(CLASS::*)(TraitType) noexcept;
      template <class CLASS>
+     using FunctionalTestMember_t = std::function<void(CLASS::*)(TraitType) noexcept>;
+     template <class CLASS>
      using TestMemberConst_t = void(CLASS::*)(TraitType) const noexcept;
+     template <class CLASS>
+     using FunctionalTestMemberConst_t = std::function<void(CLASS::*)(TraitType) const noexcept>;
      template <class CLASS>
      using TestMemberNoParams_t = void(CLASS::*)() noexcept;
      template <class CLASS>
+     using FunctionalTestMemberNoParams_t = std::function<void(CLASS::*)() noexcept>;
+     template <class CLASS>
      using TestMemberNoParamsConst_t = void(CLASS::*)() const noexcept;
+     template <class CLASS>
+     using FunctionalTestMemberNoParamsConst_t = std::function<void(CLASS::*)() const noexcept>;
      // template<class...>
      // class TestRegularFunctions;
      template <typename... PARAMS> class TestRegularFunctions {
@@ -86,6 +97,27 @@ EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParams) {
 EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParams) {
      EDS_PROBE(EXPECT_FALSE(eds::FunctionTypeChecker<TestFunction_t>::is_constant_v));
 }
+//--------------------------------------------------------------------------------------------------- 
+/*
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsFunctionParams) {
+     EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_function_v));
+}
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsNoexceptParams) {
+     EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_noexcept_v));
+}
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsVoidRCParams) {
+     EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_return_code_void_v));
+}
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsEligibleParams) {
+     EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_eligible_delegate_v));
+}
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsEligibleParams) {
+     EDS_PROBE(EXPECT_FALSE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_member_function_v));
+}
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsEligibleParams) {
+     EDS_PROBE(EXPECT_FALSE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_constant_v));
+}
+*/
 //--------------------------------------------------------------------------------------------------- 
 EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsFunctionParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_function_v));

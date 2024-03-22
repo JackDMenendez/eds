@@ -65,6 +65,7 @@ set(eds_private_headers
   "${eds_SOURCE_DIR}/include/private/event/delegate_resource_manager.hpp"
   "${eds_SOURCE_DIR}/include/private/event/call_handler.hpp"
   "${eds_SOURCE_DIR}/include/private/event/delegate.hpp"
+  "${eds_SOURCE_DIR}/include/private/event/event.hpp"
 )
 set(eds_all_headers ${eds_public_headers} ${eds_private_headers})
 ############################################################################################################
