@@ -342,11 +342,6 @@ class ConceptsFT : public ::testing::Test {
           void setConceptResult(const CLASS *object, FUNC f) const noexcept {
                (object->*f)(ConceptType::a_member_function_pointer);
           }
-          template <typename FUNC>
-               requires eds::a_lambda_lvalue<FUNC, PARAMS...>
-          void setConceptResult(FUNC &func) const noexcept {
-               func(ConceptType::LambdaLValue);
-          }
 
           ~TestRegularFunctions() noexcept = default;
      };
@@ -542,11 +537,6 @@ class ConceptsFT : public ::testing::Test {
                requires eds::a_const_member_function_pointer_without_params<CLASS, FUNC>
           void setConceptResult(const CLASS *object, FUNC f) const noexcept {
                (object->*f)();
-          }
-          template <typename FUNC>
-               requires eds::a_lambda_lvalue<FUNC>
-          void setConceptResult(FUNC &func) const noexcept {
-               func(ConceptType::LambdaLValue);
           }
 
           ~TestRegularFunctions() noexcept = default;
