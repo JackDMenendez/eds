@@ -41,7 +41,7 @@ EDS_GTESTF(DelegateUGTest, DelegateSpecializationFT, VoidClassParamsNoExcept) {
      delegate.invoke(1, 2);
      EDS_PROBE(EXPECT_EQ(3, sm_total));
 }
-EDS_GTESTF(DelegateUGTest, DelegateSpecializationFT, VoidClassParamsNoExcept) {
+EDS_GTESTF(DelegateUGTest, DelegateSpecializationFT, VoidClassParamsNoExceptMakeDelegate) {
      auto delegate = EDS Delegate<void(int, int) noexcept>::make_delegate(adderTestFunction);
      delegate.invoke(1, 2);
      EDS_PROBE(EXPECT_EQ(3, sm_total));
@@ -53,7 +53,7 @@ EDS_GTESTF(DelegateUGTest, DelegateSpecializationFT, LambdaVoidParamsNoexcept) {
      delegate(&total, 2);
      EDS_PROBE(EXPECT_EQ(2, total));
 }
-EDS_GTESTF(DelegateUGTest, DelegateSpecializationFT, LambdaVoidParamsNoexcept) {
+EDS_GTESTF(DelegateUGTest, DelegateSpecializationFT, LambdaVoidParamsNoexceptMakeDelegate) {
      int total = 0;
      auto delegate = EDS Delegate<void(int *, int) noexcept>::make_delegate(
          [](int *a, int b) noexcept -> void { *a += b; });
@@ -74,7 +74,7 @@ EDS_GTESTF(DelegateUGTest, DelegateSpecializationFT, CaptureLambdaVoidParamsNoex
 }
 /// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidParamsNoexcept
 /// tests the creation of an eds::CallHandler for a static delegate with parameters.
-EDS_GTESTF(DelegateUGTest, DelegateSpecializationFT, CaptureLambdaVoidParamsNoexcept) {
+EDS_GTESTF(DelegateUGTest, DelegateSpecializationFT, CaptureLambdaVoidParamsNoexceptMakeDelegate) {
      int another_total = 2;
      int total = 0;
      auto delegate = EDS Delegate<void(int *, int) noexcept>::make_delegate(

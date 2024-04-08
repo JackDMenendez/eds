@@ -1,5 +1,7 @@
 # Format Style Options - Created with Clang Power Tools
 ---
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: None
 AlignTrailingComments: true
 AllowAllArgumentsOnNextLine: true
 AllowAllConstructorInitializersOnNextLine: true

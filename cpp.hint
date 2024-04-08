@@ -2,3 +2,5 @@
 // por ejemplo, los nombres de funciones y macros.
 // Para obtener más información, consulte https://go.microsoft.com/fwlink/?linkid=865984
 #define EDS
+#define EDS_DCL_GTEST_INTERNALS(a,b)
+#define EDS_IMPL_GTEST_INTERNALS(a,b)

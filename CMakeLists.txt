@@ -1,5 +1,6 @@
 ###########################################################################################################
 # No testing has been done with CMake versions less the 3.28.1
+# todo: file globbing for source files and Doxygen file patterns
 ############################################################################################################
 cmake_minimum_required (VERSION 3.28.0)
 ############################################################################################################
@@ -38,7 +39,9 @@ if(PROJECT_IS_TOP_LEVEL)
 endif()
 include(GoogleTest)
 include(cmake/edcOptions.cmake)
-find_package(Doxygen REQUIRED)
+find_package(Doxygen
+             REQUIRED dot
+             OPTIONAL_COMPONENTS mscgen dia)
 ############################################################################################################
 set(CMAKE_MESSAGE_LOG_LEVEL "VERBOSE")
 enable_testing()
@@ -157,9 +160,23 @@ set(DOXYGEN_DOT_WRAP_THRESHOLD 100)
 set(DOXYGEN_CALL_GRAPH YES)
 # Suppress the output messages
 set(DOXYGEN_QUIET NO)
+# included file patterns
+set(DOXYGEN_FILE_PATTERNS *.hpp *.cpp *.hxx *.md *.h)
+set(DOXYGEN_QUIET                   NO)
+set(DOXYGEN_WARNINGS                YES)
+set(DOXYGEN_WARN_IF_UNDOCUMENTED    YES)
+set(DOXYGEN_WARN_IF_DOC_ERROR       YES)
+set(DOXYGEN_WARN_IF_INCOMPLETE_DOC  YES)
+set(DOXYGEN_WARN_NO_PARAMDOC        YES)
+set(DOXYGEN_WARN_IF_UNDOC_ENUM_VAL  YES)
+set(DOXYGEN_WARN_AS_ERROR           NO)
+
 doxygen_add_docs(
   eds_generate_docs
   "${PROJECT_SOURCE_DIR}/include"
+  "${PROJECT_SOURCE_DIR}/test/src"
+  "${PROJECT_SOURCE_DIR}/test/include"
+  "${PROJECT_SOURCE_DIR}/documentation/src"
   ALL
   COMMENT "Generating documentation eds"
 )

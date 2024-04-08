@@ -1,5 +1,13 @@
 #ifndef EDS_MEMBER_CALL_HPP
 #define EDS_MEMBER_CALL_HPP
+/**
+ *
+ * @file member_call.hpp
+ * @brief  Implement encapsulation of member function calls.
+ * @author Joaquín "Jack" D. Menéndez
+ * @date   March 2024
+ * @todo Allow only smart pointers to the object for member functions and lambdas, also make for object pointers we can give a message via static assert
+ */
 #include "../eds_concepts.hpp"
 #include "../eds_hash.hpp"
 #include "../eds_traits.hpp"
@@ -18,6 +26,7 @@ template <class... PARAMS> struct Caller {
      virtual void operator()(PARAMS... args) noexcept = 0;
      virtual void invoke(PARAMS... args) noexcept = 0;
      virtual size_t hash() const noexcept = 0;
+     virtual bool is_in_scope() const noexcept = 0;
      virtual ~Caller() noexcept = default;
 };
 template <> struct Caller<> {
@@ -29,6 +38,7 @@ template <> struct Caller<> {
      virtual void operator()() noexcept = 0;
      virtual void invoke() noexcept = 0;
      virtual size_t hash() const noexcept = 0;
+     virtual bool is_in_scope() const noexcept = 0;
      virtual ~Caller() noexcept = default;
 };
 template <typename... SIGNATURE> class MemberCallBase;
@@ -103,6 +113,7 @@ class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARMS...>
           this->m_member = other.m_member;
           return *this;
      }
+     bool is_in_scope() const noexcept override { return true; }
      size_t hash() const noexcept override {
           return hash_to_64_bits(hash_object, hash_member);
      }
@@ -140,6 +151,7 @@ class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>
      };
 
    public:
+     bool is_in_scope() const noexcept override { return true; }
      size_t hash() const noexcept override {
           return hash_to_64_bits(hash_object, hash_member);
      }
@@ -185,6 +197,7 @@ class MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARMS...>
      };
 
    public:
+     bool is_in_scope() const noexcept override { return true; }
      size_t hash() const noexcept override {
           return hash_to_64_bits(hash_object, hash_member);
      }
@@ -246,6 +259,7 @@ class MemberCall<VoidReturnCode, Constant, NoException, CLASS>
      };
 
    public:
+     bool is_in_scope() const noexcept override { return true; }
      size_t hash() const noexcept override {
           return hash_to_64_bits(hash_object, hash_member);
      }

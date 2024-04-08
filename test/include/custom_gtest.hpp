@@ -26,6 +26,10 @@
      EDS_INFO(PROBE) << '(' << __LINE__ << ')' << #PASSERTION << ' ' __VA_ARGS__              \
                      << EDS_EOL();                                                            \
      PASSERTION
+#define EDS_PROBEW(ID, PASSERTION, ...)                                                       \
+     EDS_INFO(PROBE) << ID << '(' << __LINE__ << ')' << #PASSERTION << ' ' __VA_ARGS__        \
+                     << EDS_EOL();                                                            \
+     PASSERTION
 /// An enhanced version of GTEST's TEST_F macro that allows to define a test case with a
 /// meaningful name
 ///
@@ -33,6 +37,32 @@
 /// @param UTID The unique identifier of the test case
 /// @param FIXTURE The name of the fixture class for TEST_F
 /// @param DESCRIPTION The description of the test case without spaces or underscores
-#define EDS_GTESTF(UNIT, FIXTURE, DESCRIPTION)                                                \
-     TEST_F(FIXTURE, EDS_CONCAT(UNIT, EDS_CONCAT(__LINE__, DESCRIPTION)))
+#define EDS_GTESTF(UNIT, FIXTURE, DESCRIPTION) TEST_F(FIXTURE, EDS_CONCAT(UNIT, DESCRIPTION))
+#define EDS_GTESTW(UNIT, FIXTURE, ID, DESCRIPTION)                                            \
+     TEST_F(FIXTURE, EDS_CONCAT(UNIT, EDS_CONCAT(ID, DESCRIPTION)))
+#define EDS_DCL_GTEST_INTERNALS(test_suite_name, test_name)                                   \
+   public:                                                                                    \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)() = default;                          \
+     ~GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)() override = default;                \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)                                       \
+     (const GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &) = delete;                   \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &operator=(                           \
+         const GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &) = delete;                \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)                                       \
+     (GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &&) noexcept = delete;               \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &operator=(                           \
+         GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &&) noexcept = delete;            \
+                                                                                              \
+   private:                                                                                   \
+     static ::testing::TestInfo *const test_info_
+#define EDS_IMPL_GTEST_INTERNALS(test_suite_name, test_name)                                  \
+     ::testing::TestInfo *const GTEST_TEST_CLASS_NAME_(test_suite_name,                       \
+                                                       test_name)::test_info_ =               \
+         ::testing::internal::MakeAndRegisterTestInfo(                                        \
+             EDS_STRINGIFY(test_suite_name), EDS_STRINGIFY(test_name), 0, 0,                  \
+             ::testing::internal::CodeLocation(__FILE__, __LINE__ + 1),                       \
+             (::testing::internal::GetTypeId<test_suite_name>()),                             \
+             test_suite_name::SetUpTestCase, test_suite_name::TearDownTestCase,               \
+             new ::testing::internal::TestFactoryImpl<GTEST_TEST_CLASS_NAME_(test_suite_name, \
+                                                                             test_name)>)
 #endif

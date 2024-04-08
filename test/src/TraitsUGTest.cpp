@@ -10,7 +10,7 @@
 #include <functional>
 class TraitsFT : public ::testing::Test {
    public:
-     enum class TraitType : int { regular_function, lambda_functor, member_pointer, function_pointer, none };
+     enum class TraitType : int { a_regular_function_pointer, a_lambda_rvalue, member_pointer, function_pointer, none };
      TraitsFT() noexcept = default;
      ~TraitsFT() noexcept override = default;
      void SetUp() override { sm_ConceptType = TraitType::none; }
@@ -18,10 +18,10 @@ class TraitsFT : public ::testing::Test {
           // Nothing to do so far
      }
      static TraitType sm_ConceptType;
-     static void setRegularFunction() noexcept {
+     static void testAStaticMemberPointer() noexcept {
           sm_ConceptType = TraitType::function_pointer;
      }
-     static void setRegularFunction(TraitType a) noexcept { sm_ConceptType = a; }
+     static void testAStaticMemberPointer(TraitType a) noexcept { sm_ConceptType = a; }
      using TestFunction_t = void(TraitType) noexcept;
      using FunctionalTestFunction_t = std::function<void(TraitType) noexcept>;
      using TestFunctionNoParms_t = void() noexcept;
@@ -69,11 +69,11 @@ class TraitsFT : public ::testing::Test {
           }
           template <class CLASS, class FUNC> 
           void setConceptResult(CLASS*class_instance, FUNC *f) noexcept {
-               f(TraitType::regular_function);
+               f(TraitType::a_regular_function_pointer);
           }
           template <typename FUNC> 
           void setConceptResult(FUNC &&f) const noexcept {
-               f(TraitType::regular_function);
+               f(TraitType::a_regular_function_pointer);
           }
           ~TestRegularFunctions() noexcept = default;
      };
@@ -91,53 +91,32 @@ EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsVoidRCParams) {
 EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestFunction_t>::is_eligible_delegate_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParamsMemberFunction) {
      EDS_PROBE(EXPECT_FALSE(eds::FunctionTypeChecker<TestFunction_t>::is_member_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleConstantParams) {
      EDS_PROBE(EXPECT_FALSE(eds::FunctionTypeChecker<TestFunction_t>::is_constant_v));
 }
 //--------------------------------------------------------------------------------------------------- 
-/*
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsFunctionParams) {
-     EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_function_v));
-}
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsNoexceptParams) {
-     EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_noexcept_v));
-}
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsVoidRCParams) {
-     EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_return_code_void_v));
-}
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsEligibleParams) {
-     EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_eligible_delegate_v));
-}
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsEligibleParams) {
-     EDS_PROBE(EXPECT_FALSE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_member_function_v));
-}
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionalFunctionTypeCheckerIsEligibleParams) {
-     EDS_PROBE(EXPECT_FALSE(eds::FunctionTypeChecker<FunctionalTestFunction_t>::is_constant_v));
-}
-*/
-//--------------------------------------------------------------------------------------------------- 
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsFunctionParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsFunctionNoParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsNoexceptParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsNoexceptNoParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_noexcept_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsVoidRCParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsVoidRCNoParams) {
      EDS_PROBE(
          EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_return_code_void_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleNoParams) {
      EDS_PROBE(
          EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_eligible_delegate_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleMemberNoParams) {
      EDS_PROBE(
          EXPECT_FALSE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_member_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleConstNoParams) {
      EDS_PROBE(
          EXPECT_FALSE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_constant_v));
 }
@@ -145,75 +124,75 @@ EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsEligibleParams) {
 EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberNoexceptParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_noexcept_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionReturnVoidParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_return_code_void_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsEligibleParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_eligible_delegate_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsMemberParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_member_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsConstantParams) {
      EDS_PROBE(EXPECT_FALSE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_constant_v));
 }
 //--------------------------------------------------------------------------------------------------- 
 EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoExceptNoParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_noexcept_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsReturnCodeVoidNoParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_return_code_void_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsEligibleNoParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_eligible_delegate_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionCheckNoParams) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_member_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParams) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberIsConstantFunctionNoParams) {
      EDS_PROBE(EXPECT_FALSE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_constant_v));
 }
 //--------------------------------------------------------------------------------------------------- 
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsIsFunctionConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsIsNoexceptConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_noexcept_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsIsReturnCodeVoidConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_return_code_void_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsIsEligibleConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_eligible_delegate_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsIsMemberConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_member_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionParamsIsConstantConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_constant_v));
 }
 //--------------------------------------------------------------------------------------------------- 
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsFunctionNoParamsConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsNoexceptNoParamsConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_noexcept_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsReturnCodeNoParamsConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_return_code_void_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsEligibleNoParamsConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_eligible_delegate_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsMemberFunctionNoParamsConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_member_function_v));
 }
-EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionNoParamsConst) {
+EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsConstantNoParamsConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_constant_v));
 }

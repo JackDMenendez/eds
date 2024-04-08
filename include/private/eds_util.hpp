@@ -15,5 +15,9 @@ EDS_BEGIN_NAMESPACE
 /// also does a flush.
 #define EDS_EOL() '\n'
 #endif
+#ifndef EDS_NORETURN
+// lets give Intellisense something to chew on.
+#define EDS_NORETURN
+#endif // EDS_NORETURN
 EDS_END_NAMESPACE
 #endif
