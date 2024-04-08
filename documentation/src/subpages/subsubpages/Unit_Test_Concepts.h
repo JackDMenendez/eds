@@ -18,6 +18,15 @@ is done using Google Test framework and the source code for testing concepts can
 @ref UT010130 | @ref edsUGTest.ConceptsFT.UT010130 | ConceptsFT_UT010130_Test |   ConceptsFT  | concept eds::a_member_function_pointer
 @ref UT010135 | @ref edsUGTest.ConceptsFT.UT010135 | ConceptsFT_UT010135_Test |   ConceptsFT  | concept eds::a_functional_lvalue
 @ref UT010140 | @ref edsUGTest.ConceptsFT.UT010140 | ConceptsFT_UT010140_Test |   ConceptsFT  | concept eds::a_member_function_pointer
+@ref UT010200 | @ref edsUGTest.ConceptsFT.UT010200 | ConceptsFT_UT010200_Test |   ConceptsFT  | concept eds::a_regular_function_pointer
+@ref UT010205 | @ref edsUGTest.ConceptsFT.UT010205 | ConceptsFT_UT010205_Test |   ConceptsFT  | concept eds::a_functional_lvalue
+@ref UT010210 | @ref edsUGTest.ConceptsFT.UT010210 | ConceptsFT_UT010210_Test |   ConceptsFT  | concept eds::a_lambda_rvalue
+@ref UT010215 | @ref edsUGTest.ConceptsFT.UT010215 | ConceptsFT_UT010215_Test |   ConceptsFT  | concept eds::a_functional_lvalue
+@ref UT010220 | @ref edsUGTest.ConceptsFT.UT010220 | ConceptsFT_UT010220_Test |   ConceptsFT  | concept eds::a_lambda_rvalue
+@ref UT010225 | @ref edsUGTest.ConceptsFT.UT010225 | ConceptsFT_UT010225_Test |   ConceptsFT  | concept eds::a_functional_lvalue
+@ref UT010230 | @ref edsUGTest.ConceptsFT.UT010230 | ConceptsFT_UT010230_Test |   ConceptsFT  | concept eds::a_member_function_pointer
+@ref UT010235 | @ref edsUGTest.ConceptsFT.UT010235 | ConceptsFT_UT010235_Test |   ConceptsFT  | concept eds::a_functional_lvalue
+@ref UT010240 | @ref edsUGTest.ConceptsFT.UT010240 | ConceptsFT_UT010240_Test |   ConceptsFT  | concept eds::a_member_function_pointer
 
 The following table shows test completeness for each of the function types:
 
@@ -34,6 +43,15 @@ The following table shows test completeness for each of the function types:
 @ref UT010130 | Concepts::ConceptType::a_member_function_pointer  | Complete    | concept eds::a_member_function_pointer
 @ref UT010135 | Concepts::ConceptType::a_functional_lvalue        | Complete    | concept eds::a_functional_lvalue       
 @ref UT010140 | Concepts::ConceptType::a_member_function_pointer  | Complete    | concept eds::a_member_function_pointer 
+@ref UT010200 | Concepts::ConceptType::a_regular_function_pointer | Complete    | concept eds::a_regular_function_pointer
+@ref UT010205 | Concepts::ConceptType::a_functional_lvalue        | Complete    | concept eds::a_functional_lvalue
+@ref UT010210 | Concepts::ConceptType::a_lambda_rvalue            | Complete    | concept eds::a_lambda_rvalue
+@ref UT010215 | Concepts::ConceptType::a_functional_lvalue        | Complete    | concept eds::a_functional_lvalue
+@ref UT010220 | Concepts::ConceptType::a_lambda_rvalue            | Complete    | concept eds::a_lambda_rvalue
+@ref UT010225 | Concepts::ConceptType::a_functional_lvalue        | Complete    | concept eds::a_functional_lvalue
+@ref UT010230 | Concepts::ConceptType::a_member_function_pointer  | Complete    | concept eds::a_member_function_pointer
+@ref UT010235 | Concepts::ConceptType::a_functional_lvalue        | Complete    | concept eds::a_functional_lvalue       
+@ref UT010240 | Concepts::ConceptType::a_member_function_pointer  | Complete    | concept eds::a_member_function_pointer 
 
 The following table shows test coverage for each of the function types:
 
@@ -50,6 +68,15 @@ The following table shows test coverage for each of the function types:
  a member function pointer and object                | @ref UT010130_setConceptResult | @ref UT010130
  a member function lvalue and object                 | @ref UT010135_setConceptResult | @ref UT010135
  a pointer to a const member function                | @ref UT010140_setConceptResult | @ref UT010140
+ a static member function                            | @ref UT010200_setConceptResult | @ref UT010200
+ a std::function containing a static member function | @ref UT010205_setConceptResult | @ref UT010205
+ a lambda function no capture                        | @ref UT010210_setConceptResult | @ref UT010210
+ a std::function containing a non-capture lambda     | @ref UT010205_setConceptResult | @ref UT010215
+ a lambda with capture                               | @ref UT010210_setConceptResult | @ref UT010220
+ a std::function containing a capture lambda         | @ref UT010205_setConceptResult | @ref UT010225
+ a member function pointer and object                | @ref UT010230_setConceptResult | @ref UT010230
+ a member function lvalue and object                 | @ref UT010235_setConceptResult | @ref UT010235
+ a pointer to a const member function                | @ref UT010240_setConceptResult | @ref UT010240
 
 Go back to @ref Test 
 
