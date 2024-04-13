@@ -196,3 +196,5 @@ EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsMemberFu
 EDS_GTESTF(TraitsUGTest, TraitsFT, FunctionTypeCheckerIsMemberFunctionIsConstantNoParamsConst) {
      EDS_PROBE(EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_constant_v));
 }
+//---------------------------------------------------------------------------------------------------
+

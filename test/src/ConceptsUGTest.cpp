@@ -98,14 +98,14 @@ class ConceptsFT : public ::testing::Test {
       * @param p_concept_type The concept that can be set and tested to make sure this function
       * is routed to the proper caller.
       */
-     static void testAMemberPointer(ConceptType p_concept_type) noexcept {
+     static void staticMemberPointer(ConceptType p_concept_type) noexcept {
           sm_FunctionCalled = true;
           sm_ConceptType = p_concept_type;
      }
      /**
       * @brief A static function that can be passed as a function pointer or std::function
       */
-     static void testAMemberPointerNoParams() noexcept {
+     static void staticMemberPointerNoParams() noexcept {
           sm_FunctionCalled = true;
           sm_ConceptType = ConceptType::a_regular_function_pointer_without_params;
      }
@@ -123,22 +123,22 @@ class ConceptsFT : public ::testing::Test {
            * \param concept_type The concept that can be set and tested to make sure this
            * function ran properly.
            */
-          void testAMemberPointer(ConceptType concept_type) noexcept {
+          void memberFunction(ConceptType concept_type) noexcept {
                ConceptsFT::sm_FunctionCalled = true;
                ConceptsFT::sm_ConceptType = concept_type;
                m_member = true;
           }
-          void setRegularFunctionConst(ConceptType a) const noexcept {
+          void memberConstFunction(ConceptType a) const noexcept {
                ConceptsFT::sm_FunctionCalled = true;
                ConceptsFT::sm_ConceptType = a;
                m_const_member = true;
           }
-          void setRegularFunctionNoParams() noexcept {
+          void memberFunctionNoParams() noexcept {
                ConceptsFT::sm_FunctionCalled = true;
                ConceptsFT::sm_ConceptType = ConceptType::a_member_function_pointer_without_parameters;
                m_member = true;
           }
-          void setRegularFunctionNoParamsConst() const noexcept {
+          void memberConstFunctionNoParams() const noexcept {
                ConceptsFT::sm_FunctionCalled = true;
                ConceptsFT::sm_ConceptType = ConceptType::a_const_member_function_pointer_without_parameters;
                m_const_member = true;
@@ -291,8 +291,23 @@ class ConceptsFT : public ::testing::Test {
                requires eds::a_member_function_pointer<CLASS, METHOD, PARAMS...>
           void setConceptResult(CLASS *object_pointer,
                                 METHOD member_function_pointer) const noexcept {
+               #pragma message("Warning: Prefer smart pointer for CLASS type object_pointer")
                (object_pointer->*member_function_pointer)(
                    ConceptType::a_member_function_pointer);
+          }
+          template <class CLASS, typename METHOD>
+               requires eds::a_member_function_pointer<CLASS, METHOD, PARAMS...>
+          void setConceptResult(std::unique_ptr<CLASS>& object_pointer,
+                                METHOD member_function_pointer) const noexcept {
+               (object_pointer.get()->*member_function_pointer)(
+                   ConceptType::a_member_function_pointer);
+          }
+          template <class CLASS, typename METHOD>
+               requires eds::a_member_function_pointer<CLASS, METHOD, PARAMS...>
+          void setConceptResult(std::shared_ptr<CLASS>& object_pointer,
+                                METHOD member_function_pointer) const noexcept {
+                    (object_pointer.get()->*member_function_pointer)(
+                        ConceptType::a_member_function_pointer);
           }
           /**
            * @brief Require concept eds::a_functional_lvalue for a class method.
@@ -316,7 +331,20 @@ class ConceptsFT : public ::testing::Test {
                requires eds::a_functional_lvalue<METHOD, CLASS, PARAMS...> &&
                         eds::some_class_type<CLASS>
           void setConceptResult(CLASS *object, METHOD &method) const noexcept {
+               #pragma message("Warning: Prefer smart pointer for CLASS type object_pointer")
                method(object, ConceptType::a_functional_lvalue);
+          }
+          template <class CLASS, typename METHOD>
+               requires eds::a_functional_lvalue<METHOD, CLASS, PARAMS...> &&
+                        eds::some_class_type<CLASS>
+          void setConceptResult(std::unique_ptr<CLASS> &object, METHOD &method) const noexcept {
+               method(object.get(), ConceptType::a_functional_lvalue);
+          }
+          template <class CLASS, typename METHOD>
+               requires eds::a_functional_lvalue<METHOD, CLASS, PARAMS...> &&
+                        eds::some_class_type<CLASS>
+          void setConceptResult(std::shared_ptr<CLASS>& object, METHOD &method) const noexcept {
+               method(object.get(), ConceptType::a_functional_lvalue);
           }
           /**
            * @brief Require concept eds::a_member_function_pointer for a const class method.
@@ -340,7 +368,18 @@ class ConceptsFT : public ::testing::Test {
           template <class CLASS, typename FUNC>
                requires eds::a_const_member_function_pointer<CLASS, FUNC, PARAMS...>
           void setConceptResult(const CLASS *object, FUNC f) const noexcept {
+               #pragma message("Warning: Prefer smart pointer for CLASS type object_pointer")
                (object->*f)(ConceptType::a_member_function_pointer);
+          }
+          template <class CLASS, typename FUNC>
+               requires eds::a_const_member_function_pointer<CLASS, FUNC, PARAMS...>
+          void setConceptResult(std::unique_ptr<CLASS> &object, FUNC f) const noexcept {
+               (object.get()->*f)(ConceptType::a_member_function_pointer);
+          }
+          template <class CLASS, typename FUNC>
+               requires eds::a_const_member_function_pointer<CLASS, FUNC, PARAMS...>
+          void setConceptResult(std::shared_ptr<CLASS>& object, FUNC f) const noexcept {
+               (object.get()->*f)(ConceptType::a_member_function_pointer);
           }
 
           ~TestRegularFunctions() noexcept = default;
@@ -485,10 +524,25 @@ class ConceptsFT : public ::testing::Test {
            * @sa ConceptType::a_member_function_pointer
            */
           template <class CLASS, typename METHOD>
-               requires eds::a_member_function_pointer_without_params<CLASS, METHOD>
+               requires eds::a_member_function_pointer_without_params<CLASS, METHOD> && eds::some_class_type<CLASS>
           void setConceptResult(CLASS *object_pointer,
                                 METHOD member_function_pointer) const noexcept {
+               #pragma message("Warning: Prefer smart pointer for CLASS type object_pointer")
                (object_pointer->*member_function_pointer)();
+          }
+          template <class CLASS, typename METHOD>
+               requires eds::a_member_function_pointer_without_params<CLASS, METHOD> && eds::some_class_type<CLASS>
+          void setConceptResult(std::unique_ptr<CLASS> &object_pointer,
+                                METHOD member_function_pointer) const noexcept {
+               #pragma message("Warning: Prefer smart pointer for CLASS type object_pointer")
+               (object_pointer.get()->*member_function_pointer)();
+          }
+          template <class CLASS, typename METHOD>
+               requires eds::a_member_function_pointer_without_params<CLASS, METHOD> && eds::some_class_type<CLASS>
+          void setConceptResult(std::shared_ptr<CLASS> &object_pointer,
+                                METHOD member_function_pointer) const noexcept {
+               #pragma message("Warning: Prefer smart pointer for CLASS type object_pointer")
+               (object_pointer.get()->*member_function_pointer)();
           }
           /**
            * @brief Require concept eds::a_functional_lvalue for a class method.
@@ -512,7 +566,20 @@ class ConceptsFT : public ::testing::Test {
                requires eds::a_functional_member_lvalue_without_params<METHOD,CLASS> &&
                         eds::some_class_type<CLASS>
           void setConceptResult(CLASS *object, METHOD method) const noexcept {
+               #pragma message("Warning: Prefer smart pointer for CLASS type object_pointer")
                method(object);
+          }
+          template <class CLASS, typename METHOD>
+               requires eds::a_functional_member_lvalue_without_params<METHOD,CLASS> &&
+                        eds::some_class_type<CLASS>
+          void setConceptResult(std::unique_ptr<CLASS> &object, METHOD method) const noexcept {
+               method(object.get());
+          }
+          template <class CLASS, typename METHOD>
+               requires eds::a_functional_member_lvalue_without_params<METHOD,CLASS> &&
+                        eds::some_class_type<CLASS>
+          void setConceptResult(std::shared_ptr<CLASS> &object, METHOD method) const noexcept {
+               method(object.get());
           }
           /**
            * @brief Require concept eds::a_member_function_pointer for a const class method.
@@ -536,6 +603,7 @@ class ConceptsFT : public ::testing::Test {
           template <class CLASS, typename FUNC>
                requires eds::a_const_member_function_pointer_without_params<CLASS, FUNC>
           void setConceptResult(const CLASS *object, FUNC f) const noexcept {
+               #pragma message("Warning: Prefer smart pointer for CLASS type object_pointer")
                (object->*f)();
           }
 
@@ -585,7 +653,7 @@ class ConceptsFT_UT010100_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010100);
 void ConceptsFT_UT010100_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
-     testFunctions.setConceptResult(ConceptsFT::testAMemberPointer);
+     testFunctions.setConceptResult(ConceptsFT::staticMemberPointer);
      EDS_PROBEW(000010, EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
      EDS_PROBEW(000020, EXPECT_EQ(ConceptsFT::sm_ConceptType,
                                   ConceptType::a_regular_function_pointer));
@@ -631,7 +699,7 @@ EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010105);
 void ConceptsFT_UT010105_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
      // create a std::function<void()> from a static member function with parameters
-     std::function<void(ConceptType)> f(ConceptsFT::testAMemberPointer);
+     std::function<void(ConceptType)> f(ConceptsFT::staticMemberPointer);
      // go through the specialization for to call the std::function, this is what we are testing
      testFunctions.setConceptResult(f);
      EDS_PROBEW(000010, EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
@@ -882,13 +950,42 @@ class ConceptsFT_UT010130_Test : public ConceptsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010130);
 void ConceptsFT_UT010130_Test::TestBody() {
+     #pragma message("warning(" EDS_TOSTRING(__LINE__) ")Prefer smart pointer for CLASS type object_pointer")
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
      ConceptsFT::TestMember testMember;
-     testFunctions.setConceptResult(&testMember, &ConceptsFT::TestMember::testAMemberPointer);
+     testFunctions.setConceptResult(&testMember, &ConceptsFT::TestMember::memberFunction);
      EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer));
      EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
      EDS_PROBE(EXPECT_TRUE(testMember.isMember()));
      EDS_PROBE(EXPECT_FALSE(testMember.isConstMember()));
+}
+class ConceptsFT_UT010131_Test : public ConceptsFT {
+     EDS_DCL_GTEST_INTERNALS(ConceptsFT, UT010131);
+     void TestBody() override;
+};
+EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010131);
+void ConceptsFT_UT010131_Test::TestBody() {
+     ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
+     auto testMember = std::make_unique<ConceptsFT::TestMember>();
+     testFunctions.setConceptResult(testMember, &ConceptsFT::TestMember::memberFunction);
+     EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer));
+     EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
+     EDS_PROBE(EXPECT_TRUE(testMember->isMember()));
+     EDS_PROBE(EXPECT_FALSE(testMember->isConstMember()));
+}
+class ConceptsFT_UT010132_Test : public ConceptsFT {
+     EDS_DCL_GTEST_INTERNALS(ConceptsFT, UT010132);
+     void TestBody() override;
+};
+EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010132);
+void ConceptsFT_UT010132_Test::TestBody() {
+     ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
+     auto testMember = std::make_shared<ConceptsFT::TestMember>();
+     testFunctions.setConceptResult(testMember, &ConceptsFT::TestMember::memberFunction);
+     EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer));
+     EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
+     EDS_PROBE(EXPECT_TRUE(testMember->isMember()));
+     EDS_PROBE(EXPECT_FALSE(testMember->isConstMember()));
 }
 #endif
 //------------------------------------------------------------------------------------------
@@ -932,12 +1029,42 @@ EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010135);
 void ConceptsFT_UT010135_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
      ConceptsFT::TestMember testMember;
-     auto functional = std::mem_fn(&ConceptsFT::TestMember::testAMemberPointer);
+     auto functional = std::mem_fn(&ConceptsFT::TestMember::memberFunction);
      testFunctions.setConceptResult(&testMember, functional);
      EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_functional_lvalue));
      EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
      EDS_PROBE(EXPECT_TRUE(testMember.isMember()));
      EDS_PROBE(EXPECT_FALSE(testMember.isConstMember()));
+}
+class ConceptsFT_UT010136_Test : public ConceptsFT {
+     EDS_DCL_GTEST_INTERNALS(ConceptsFT, UT010136);
+     void TestBody() override;
+};
+EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010136);
+void ConceptsFT_UT010136_Test::TestBody() {
+     ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
+     auto testMember = std::make_unique<ConceptsFT::TestMember>();
+     auto functional = std::mem_fn(&ConceptsFT::TestMember::memberFunction);
+     testFunctions.setConceptResult(testMember, functional);
+     EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_functional_lvalue));
+     EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
+     EDS_PROBE(EXPECT_TRUE(testMember->isMember()));
+     EDS_PROBE(EXPECT_FALSE(testMember->isConstMember()));
+}
+class ConceptsFT_UT010137_Test : public ConceptsFT {
+     EDS_DCL_GTEST_INTERNALS(ConceptsFT, UT010137);
+     void TestBody() override;
+};
+EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010137);
+void ConceptsFT_UT010137_Test::TestBody() {
+     ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
+     auto testMember = std::make_shared<ConceptsFT::TestMember>();
+     auto functional = std::mem_fn(&ConceptsFT::TestMember::memberFunction);
+     testFunctions.setConceptResult(testMember, functional);
+     EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_functional_lvalue));
+     EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
+     EDS_PROBE(EXPECT_TRUE(testMember->isMember()));
+     EDS_PROBE(EXPECT_FALSE(testMember->isConstMember()));
 }
 #endif
 //------------------------------------------------------------------------------------------
@@ -980,11 +1107,41 @@ void ConceptsFT_UT010140_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
      ConceptsFT::TestMember testMember;
      testFunctions.setConceptResult(&testMember,
-                                    &ConceptsFT::TestMember::setRegularFunctionConst);
+                                    &ConceptsFT::TestMember::memberConstFunction);
      EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer));
      EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
      EDS_PROBE(EXPECT_FALSE(testMember.isMember()));
      EDS_PROBE(EXPECT_TRUE(testMember.isConstMember()));
+}
+class ConceptsFT_UT010141_Test : public ConceptsFT {
+     EDS_DCL_GTEST_INTERNALS(ConceptsFT, UT010141);
+     void TestBody() override;
+};
+EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010141);
+void ConceptsFT_UT010141_Test::TestBody() {
+     ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
+     auto testMember = std::make_unique<ConceptsFT::TestMember>();
+     testFunctions.setConceptResult(testMember,
+                                    &ConceptsFT::TestMember::memberConstFunction);
+     EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer));
+     EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
+     EDS_PROBE(EXPECT_FALSE(testMember->isMember()));
+     EDS_PROBE(EXPECT_TRUE(testMember->isConstMember()));
+}
+class ConceptsFT_UT010142_Test : public ConceptsFT {
+     EDS_DCL_GTEST_INTERNALS(ConceptsFT, UT010142);
+     void TestBody() override;
+};
+EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010142);
+void ConceptsFT_UT010142_Test::TestBody() {
+     ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
+     auto testMember = std::make_shared<ConceptsFT::TestMember>();
+     testFunctions.setConceptResult(testMember,
+                                    &ConceptsFT::TestMember::memberConstFunction);
+     EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer));
+     EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
+     EDS_PROBE(EXPECT_FALSE(testMember->isMember()));
+     EDS_PROBE(EXPECT_TRUE(testMember->isConstMember()));
 }
 #endif
 //--------------------------------------------------------------------------------------------
@@ -1031,7 +1188,7 @@ void ConceptsFT_UT010200_Test::TestBody() {
      // instantiate the test class selecting on no parameter to the functions.
      ConceptsFT::TestRegularFunctions<> testFunctions;
      // go through the specialization for to call the std::function, this is what we are testing
-     testFunctions.setConceptResult(ConceptsFT::testAMemberPointerNoParams);
+     testFunctions.setConceptResult(ConceptsFT::staticMemberPointerNoParams);
      EDS_PROBEW(000010, EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
      EDS_PROBEW(000020, EXPECT_EQ(ConceptsFT::sm_ConceptType,
                                   ConceptType::a_regular_function_pointer_without_params));
@@ -1078,7 +1235,7 @@ void ConceptsFT_UT010205_Test::TestBody() {
      // instantiate the test class selecting on no parameter to the functions.
      ConceptsFT::TestRegularFunctions<> testFunctions;
      // create a std::function<void()> from a static member function with no parameters
-     std::function<void()> f(testAMemberPointerNoParams);
+     std::function<void()> f(staticMemberPointerNoParams);
      // go through the specialization for to call the std::function, this is what we are testing
      testFunctions.setConceptResult(f);
      EDS_PROBEW(000010, EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
@@ -1330,11 +1487,39 @@ EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010230);
 void ConceptsFT_UT010230_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<> testFunctions;
      ConceptsFT::TestMember testMember;
-     testFunctions.setConceptResult(&testMember, &ConceptsFT::TestMember::setRegularFunctionNoParams);
+     testFunctions.setConceptResult(&testMember, &ConceptsFT::TestMember::memberFunctionNoParams);
      EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer_without_parameters));
      EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
      EDS_PROBE(EXPECT_TRUE(testMember.isMember()));
      EDS_PROBE(EXPECT_FALSE(testMember.isConstMember()));
+}
+class ConceptsFT_UT010231_Test : public ConceptsFT {
+     EDS_DCL_GTEST_INTERNALS(ConceptsFT, UT010231);
+     void TestBody() override;
+};
+EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010231);
+void ConceptsFT_UT010231_Test::TestBody() {
+     ConceptsFT::TestRegularFunctions<> testFunctions;
+     auto testMember = std::make_unique<ConceptsFT::TestMember>();
+     testFunctions.setConceptResult(testMember, &ConceptsFT::TestMember::memberFunctionNoParams);
+     EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer_without_parameters));
+     EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
+     EDS_PROBE(EXPECT_TRUE(testMember->isMember()));
+     EDS_PROBE(EXPECT_FALSE(testMember->isConstMember()));
+}
+class ConceptsFT_UT010232_Test : public ConceptsFT {
+     EDS_DCL_GTEST_INTERNALS(ConceptsFT, UT010232);
+     void TestBody() override;
+};
+EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010232);
+void ConceptsFT_UT010232_Test::TestBody() {
+     ConceptsFT::TestRegularFunctions<> testFunctions;
+     auto testMember = std::make_shared<ConceptsFT::TestMember>();
+     testFunctions.setConceptResult(testMember, &ConceptsFT::TestMember::memberFunctionNoParams);
+     EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer_without_parameters));
+     EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
+     EDS_PROBE(EXPECT_TRUE(testMember->isMember()));
+     EDS_PROBE(EXPECT_FALSE(testMember->isConstMember()));
 }
 #endif
 //------------------------------------------------------------------------------------------
@@ -1378,7 +1563,7 @@ EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010235);
 void ConceptsFT_UT010235_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<> testFunctions;
      ConceptsFT::TestMember testMember;
-     auto functional = std::mem_fn(&ConceptsFT::TestMember::setRegularFunctionNoParams);
+     auto functional = std::mem_fn(&ConceptsFT::TestMember::memberFunctionNoParams);
      testFunctions.setConceptResult(&testMember, functional);
      EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_member_function_pointer_without_parameters));
      EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
@@ -1426,7 +1611,7 @@ void ConceptsFT_UT010240_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<> testFunctions;
      ConceptsFT::TestMember testMember;
      testFunctions.setConceptResult(&testMember,
-                                    &ConceptsFT::TestMember::setRegularFunctionNoParamsConst);
+                                    &ConceptsFT::TestMember::memberConstFunctionNoParams);
      EDS_PROBE(EXPECT_EQ(ConceptsFT::sm_ConceptType, ConceptType::a_const_member_function_pointer_without_parameters));
      EDS_PROBE(EXPECT_TRUE(ConceptsFT::sm_FunctionCalled));
      EDS_PROBE(EXPECT_FALSE(testMember.isMember()));

@@ -3,6 +3,7 @@
 #include "eds_util.hpp"
 #include <tuple>
 #include <type_traits>
+#include <functional>
 EDS_BEGIN_NAMESPACE
 class PSuedoObject {
    public:
@@ -221,5 +222,6 @@ constexpr static bool is_constant_v = true;
      constexpr static bool is_function_v = true;
      constexpr static bool is_eligible_delegate_v = is_noexcept_v & is_return_code_void_v;
 };
+
 EDS_END_NAMESPACE
 #endif

@@ -110,11 +110,13 @@ concept a_lambda_lvalue =
  */
 template <class CLASS, class FUNC, class... PARAMS>
 concept a_member_function_pointer =
-    std::is_member_function_pointer_v<FUNC> && some_class_type<CLASS> &&
-    FunctionTypeChecker<FUNC>::is_eligible_delegate_v &&
-    (!FunctionTypeChecker<FUNC>::is_constant_v) && a_member_function<CLASS, FUNC, PARAMS...> &&
-    (FunctionTypeChecker<FUNC>::num_params > 0) &&
-    (FunctionTypeChecker<FUNC>::num_params == sizeof...(PARAMS));
+    std::is_member_function_pointer_v<FUNC> 
+    && some_class_type<CLASS> 
+    && FunctionTypeChecker<FUNC>::is_eligible_delegate_v 
+    && (!FunctionTypeChecker<FUNC>::is_constant_v) 
+    && a_member_function<CLASS, FUNC, PARAMS...> 
+    && (FunctionTypeChecker<FUNC>::num_params > 0)
+    && (FunctionTypeChecker<FUNC>::num_params == sizeof...(PARAMS));
 /**
  * @brief Require an eligible const member function pointer
  * 
