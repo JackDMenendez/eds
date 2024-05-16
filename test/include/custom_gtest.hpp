@@ -27,7 +27,7 @@
                      << EDS_EOL();                                                            \
      PASSERTION
 #define EDS_PROBEW(ID, PASSERTION, ...)                                                       \
-     EDS_INFO(PROBE) << ID << '(' << __LINE__ << ')' << #PASSERTION << ' ' __VA_ARGS__        \
+     EDS_INFO(PROBE) << #ID << '(' << __LINE__ << ')' << #PASSERTION << ' ' __VA_ARGS__        \
                      << EDS_EOL();                                                            \
      PASSERTION
 /// An enhanced version of GTEST's TEST_F macro that allows to define a test case with a

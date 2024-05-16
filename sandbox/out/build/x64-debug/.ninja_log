@@ -1,0 +1,7 @@
+# ninja log v5
+1607	1881	7365890277857926	sandbox.exe	5ff3e88b3936c120
+13	960	7360780422512201	CMakeFiles/sandbox.dir/sandbox.cpp.obj	aba6a185efa595ff
+25	1606	7365890275818157	CMakeFiles/sandbox.dir/copyablevsmovable.cpp.obj	cc1c81a70d0765b2
+5	220	7367196151951484	build.ninja	94c0cefb4b94d8cb
+14	1332	7367248762962235	CMakeFiles/sandbox.dir/copyablevsmovable.cpp.obj	cc1c81a70d0765b2
+1332	1606	7367248764845292	sandbox.exe	5ff3e88b3936c120

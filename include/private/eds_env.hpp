@@ -1,6 +1,8 @@
 #ifndef EDS_ENV_HPP
 #define EDS_ENV_HPP
 #include <cstddef>
+// The following contains the friend macro for the GTest framework
+#include "gtest/gtest_prod.h"
 #if defined(__MINGW32__)
 #define EDS_MINGW_OS
 #elif defined(_WIN32)
@@ -54,11 +56,17 @@
 static_assert(EDS_CXX20 || EDS_CXX23, "EDC requires Compiler support C++ 20 or higher");
 // P2465R3 Standard Library Modules std And std.compat
 #endif // Compiler_Specifics
-// The following contains the friend macro for the GTest framework
-#include "gtest/gtest_prod.h"
 
 #define EDS_NAMESPACE eds
 #define EDS ::EDS_NAMESPACE::
 #define EDS_BEGIN_NAMESPACE namespace EDS_NAMESPACE {
 #define EDS_END_NAMESPACE }
+/**
+ * @brief Define NDUMPTRS as preprocessor macro at build time to eliminate passing of dumb
+ * pointer when they have scope.
+ * @anchor NDUMBPTRS
+ */
+#ifdef NDUMBPTRS
+#define EDS_NDUMBPTRS NDUMBPTRS
+#endif // NDUMBPTRS
 #endif // EDS_ENV_HPP

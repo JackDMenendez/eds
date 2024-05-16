@@ -5,6 +5,12 @@
 There is a separate testing unit for concepts. The source code for concepts can be found at \ref eds_concepts.hpp. The unit testing
 is done using Google Test framework and the source code for testing concepts can be found at \ref eds_concepts_test.cpp.
 
+Some scenarios test issuing error messages using static_assert. The error messages are tested by using the following code snippet:
+
+@todo Add code snippet for testing static_assert
+
+
+
 @anchor table_test_concepts_cross_reference "Test Concepts Cross Reference"
 
    Test ID    |            Test Name               |    Google Test Class     | Fixture Class | Test Description

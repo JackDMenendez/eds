@@ -20,4 +20,21 @@ EDS_BEGIN_NAMESPACE
 #define EDS_NORETURN
 #endif // EDS_NORETURN
 EDS_END_NAMESPACE
+#define __STR2__(x) #x
+#define __STR1__(x) __STR2__(x)
+#define __LOCATION__ __FILE__ "("__STR1__(__LINE__) ") :"
+#define __WARNING__(message) __LOCATION__ "Warning Msg : " message
+#define __INFORMATION__(message) __LOCATION__ "Info Msg: " message
+#define __ERROR__(message) __LOCATION__ "Error Msg: " message
+#define __FATAL__(message) __LOCATION__ "Fatal Msg: " message
+#define __ASSERT__(message) __LOCATION__ "Assert Msg: " message
+// Message Macros
+#define EDS_WARNING(message) __WARNING__(message)
+#define EDS_INFORMATION(message) __INFORMATION__(message)
+#define EDS_ERROR(message) __ERROR__(message)
+#define EDS_FATAL(message) __FATAL__(message)
+#define EDS_ASSERT(message) __ASSERT__(message)
+// Messages
+#define EDS_1001(TYPE, PARAM) "EDS 1001 W Prefer smart pointer for " EDS_TOSTRING(TYPE) " param " EDS_TOSTRING(PARAM)
+#define EDS_2001(TYPE, PARAM) "EDS 2001 E Pass class " EDS_TOSTRING(TYPE) " as reference instead of pointer param " EDS_TOSTRING(PARAM)
 #endif

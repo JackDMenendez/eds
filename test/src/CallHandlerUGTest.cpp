@@ -8,86 +8,90 @@
 #include "private/eds_util.hpp"
 #include "private/event/call_handler.hpp"
 #include "private/event/member_call.hpp"
-class TestAdderResource : public EDS DelegateResourceManager<int, int> {
-   public:
-     using Equivalent_t = void(int, int) noexcept;
-     TestAdderResource() noexcept = default;
-     ~TestAdderResource() noexcept override = default;
-     void invoke(int a, int b) noexcept override {}
-     bool equals(const EDS Resource &other) const noexcept override { return false; }
-     void operator()(int a, int b) noexcept override {}
-     size_t get_subscriber_id() const noexcept override { return 0; }
-     long get_use_count() const noexcept override { return 0; }
-};
-class TestPointerResource : public EDS DelegateResourceManager<int *, int> {
-   public:
-     using Equivalent_t = void(int *, int) noexcept;
-     TestPointerResource() noexcept = default;
-     ~TestPointerResource() noexcept override = default;
-     void invoke(int *a, int b) noexcept override {}
-     bool equals(const EDS Resource &other) const noexcept override { return false; }
-     void operator()(int *a, int b) noexcept override {}
-     size_t get_subscriber_id() const noexcept override { return 0; }
-     long get_use_count() const noexcept override { return 0; }
-};
-class TestIncrementResource : public EDS DelegateResourceManager<> {
-   public:
-     using Equivalent_t = void() noexcept;
-     TestIncrementResource() noexcept {}
-     ~TestIncrementResource() noexcept override {}
-     void invoke() noexcept override {}
-     bool equals(const EDS Resource &other) const noexcept override { return false; }
-     void operator()() noexcept override {}
-     size_t get_subscriber_id() const noexcept override { return 0; }
-     long get_use_count() const noexcept override { return 0; }
-};
-class TestSubscriberClass {
-   private:
-     int m_total = 0;
-     mutable int m_mutable_total = 0;
-
-   public:
-     TestSubscriberClass() noexcept {}
-     ~TestSubscriberClass() noexcept {}
-
-     void incrementTestFunctionConst() const noexcept { m_mutable_total++; }
-     void adderTestFunctionConst(int a, int b) const noexcept { m_mutable_total = a + b; }
-     void incrementTestFunction() noexcept { m_total++; }
-     void adderTestFunction(int a, int b) noexcept { m_total = a + b; }
-     int get_total() { return m_total; }
-     int get_mutable_total() const { return m_mutable_total; }
-};
-class IncrementMockResource : public EDS DelegateResourceManager<> {
-   public:
-     using Equivalent_t = void() noexcept;
-     IncrementMockResource() noexcept {}
-     ~IncrementMockResource() noexcept override {}
-     void invoke() noexcept override {}
-     bool equals(const EDS Resource &other) const noexcept override { return false; }
-     void operator()() noexcept override {}
-     size_t get_subscriber_id() const noexcept override { return 0; }
-     long get_use_count() const noexcept override { return 0; }
-};
-class CallHandlerTF : public ::testing::Test {
+class CallHandlerFT : public ::testing::Test {
    protected:
+     class TestAdderResource : public EDS DelegateResourceManager<int, int> {
+        public:
+          using Equivalent_t = void(int, int) noexcept;
+          TestAdderResource() noexcept = default;
+          ~TestAdderResource() noexcept override = default;
+          void invoke(int a, int b) noexcept override {}
+          bool equals(const EDS Resource &other) const noexcept override { return false; }
+          void operator()(int a, int b) noexcept override {}
+          size_t get_subscriber_id() const noexcept override { return 0; }
+          long get_use_count() const noexcept override { return 0; }
+     };
+     class TestPointerResource : public EDS DelegateResourceManager<int *, int> {
+        public:
+          using Equivalent_t = void(int *, int) noexcept;
+          TestPointerResource() noexcept = default;
+          ~TestPointerResource() noexcept override = default;
+          void invoke(int *a, int b) noexcept override {}
+          bool equals(const EDS Resource &other) const noexcept override { return false; }
+          void operator()(int *a, int b) noexcept override {}
+          size_t get_subscriber_id() const noexcept override { return 0; }
+          long get_use_count() const noexcept override { return 0; }
+     };
+     class TestIncrementResource : public EDS DelegateResourceManager<> {
+        public:
+          using Equivalent_t = void() noexcept;
+          TestIncrementResource() noexcept {}
+          ~TestIncrementResource() noexcept override {}
+          void invoke() noexcept override {}
+          bool equals(const EDS Resource &other) const noexcept override { return false; }
+          void operator()() noexcept override {}
+          size_t get_subscriber_id() const noexcept override { return 0; }
+          long get_use_count() const noexcept override { return 0; }
+     };
+     class TestSubscriberClass {
+        private:
+          int m_total = 0;
+          mutable int m_mutable_total = 0;
+
+        public:
+          TestSubscriberClass() noexcept = default;
+          virtual ~TestSubscriberClass() noexcept = default;
+          TestSubscriberClass(const TestSubscriberClass &other) noexcept = default;
+          TestSubscriberClass(TestSubscriberClass &&other) noexcept = default;
+          TestSubscriberClass &operator=(const TestSubscriberClass &other) noexcept = default;
+          TestSubscriberClass &operator=(TestSubscriberClass &&other) noexcept = default;
+
+          void incrementTestFunctionConst() const noexcept { m_mutable_total++; }
+          void adderTestFunctionConst(int a, int b) const noexcept { m_mutable_total = a + b; }
+          void incrementTestFunction() noexcept { m_total++; }
+          void adderTestFunction(int a, int b) noexcept { m_total = a + b; }
+          int get_total() { return m_total; }
+          int get_mutable_total() const { return m_mutable_total; }
+     };
+     class IncrementMockResource : public EDS DelegateResourceManager<> {
+        public:
+          using Equivalent_t = void() noexcept;
+          IncrementMockResource() noexcept {}
+          ~IncrementMockResource() noexcept override {}
+          void invoke() noexcept override {}
+          bool equals(const EDS Resource &other) const noexcept override { return false; }
+          void operator()() noexcept override {}
+          size_t get_subscriber_id() const noexcept override { return 0; }
+          long get_use_count() const noexcept override { return 0; }
+     };
      static int sm_total;
 
      using AdderTestWrapper_t = EDS CallHandler<EDS FunctionPointer, int, int>;
      using AdderMemberTestWrapper_t = EDS CallHandler<EDS PsuedoMemberPointer, int, int>;
      using IncrementMemberTestWrapper_t = EDS CallHandler<EDS PsuedoMemberPointer>;
      using IncrementTestWrapper_t = EDS CallHandler<EDS FunctionPointer>;
-     CallHandlerTF() {}
+     CallHandlerFT() {}
      virtual void SetUp() { sm_total = 0; }
      virtual void TearDown() {}
-     ~CallHandlerTF() {}
+     ~CallHandlerFT() {}
      static void incrementTestFunction() noexcept { sm_total++; }
      static void adderTestFunction(int a, int b) noexcept { sm_total = a + b; }
      static int get_stotal() { return sm_total; }
 };
-int CallHandlerTF::sm_total = 0;
+int CallHandlerFT::sm_total = 0;
 /// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidParamsNoexcept
 /// tests the creation of an eds::CallHandler for a static delegate with parameters.
-EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, VoidParamsNoexcept) {
+EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, VoidParamsNoexcept) {
      EDS_INFO(TYPES) << "CallHandler Type: " << typeid(AdderTestWrapper_t).name() << EDS_EOL();
      EDS_INFO(TYPES) << "Call Back Function Type: "
                      << typeid(AdderTestWrapper_t::CallBack_t).name() << EDS_EOL();
@@ -104,7 +108,7 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, VoidParamsNoexcept) {
 }
 /// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidNoparamsNoexcept
 /// tests the creation of an eds::CallHandler for a static delegate without parameters.
-EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, VoidNoparamsNoexcept) {
+EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, VoidNoparamsNoexcept) {
      EDS_INFO(TYPES) << "CallHandler Type: " << typeid(IncrementTestWrapper_t).name()
                      << EDS_EOL();
      EDS_INFO(TYPES) << "Call Back Function Type: "
@@ -121,7 +125,7 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, VoidNoparamsNoexcept) {
      ch();
      EDS_PROBE(EXPECT_EQ(1, get_stotal()));
 }
-EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidParamsNoexcept) {
+EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, MemberVoidParamsNoexcept) {
      EDS_INFO(TYPES) << "CallHandler Type: " << typeid(AdderMemberTestWrapper_t).name()
                      << EDS_EOL();
      EDS_INFO(TYPES) << "Call Back Function Type: "
@@ -139,7 +143,7 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidParamsNoexcept) {
      ch(1, 2);
      EDS_PROBE(EXPECT_EQ(3, subscriber_class.get_total()));
 }
-EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidParamsConstNoexcept) {
+EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, MemberVoidParamsConstNoexcept) {
      EDS_INFO(TYPES) << "CallHandler Type: " << typeid(AdderMemberTestWrapper_t).name()
                      << EDS_EOL();
      EDS_INFO(TYPES) << "Call Back Function Type: "
@@ -157,7 +161,7 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidParamsConstNoexcept) {
      ch(1, 2);
      EDS_PROBE(EXPECT_EQ(3, subscriber_class.get_mutable_total()));
 }
-EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidNoexcept) {
+EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, MemberVoidNoexcept) {
      TestIncrementResource resource;
      TestSubscriberClass subscriber_class;
      IncrementMemberTestWrapper_t ch(&subscriber_class,
@@ -166,7 +170,7 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidNoexcept) {
      ch();
      EDS_PROBE(EXPECT_EQ(1, subscriber_class.get_total()));
 }
-EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidConstNoexcept) {
+EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, MemberVoidConstNoexcept) {
      TestIncrementResource resource;
      TestSubscriberClass subscriber_class;
      IncrementMemberTestWrapper_t ch(
@@ -177,7 +181,7 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, MemberVoidConstNoexcept) {
 }
 /// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidParamsNoexcept
 /// tests the creation of an eds::CallHandler for a static delegate with parameters.
-EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, LambdaVoidParamsNoexcept) {
+EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, LambdaVoidParamsNoexcept) {
      using AdderTestWrapper_t = EDS CallHandler<EDS FunctionPointer, int *, int>;
      TestPointerResource resource;
      int total = 0;
@@ -188,7 +192,7 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, LambdaVoidParamsNoexcept) {
 }
 /// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidParamsNoexcept
 /// tests the creation of an eds::CallHandler for a static delegate with parameters.
-EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, CaptureLambdaVoidParamsNoexcept) {
+EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, CaptureLambdaVoidParamsNoexcept) {
      TestPointerResource resource;
      int another_total = 2;
      int total = 0;
@@ -203,7 +207,7 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, CaptureLambdaVoidParamsNoexcept) {
 }
 /// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidParamsNoexcept
 /// tests the creation of an eds::CallHandler for a static delegate with parameters.
-EDS_GTESTF(CallHandlerUGTest, CallHandlerTF, CaptureLambdaVoidNoexcept) {
+EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, CaptureLambdaVoidNoexcept) {
      TestIncrementResource resource;
      int another_total = 2;
      int total = 0;

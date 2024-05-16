@@ -6,6 +6,7 @@
 #include "resource.hpp"
 #include "subscriber.hpp"
 #include <memory>
+#include <cassert>
 #include <type_traits>
 EDS_BEGIN_NAMESPACE
 template <class... SIGNATURE> class CallHandler;
@@ -139,23 +140,25 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
      Resource *m_resource_manager = nullptr;
 
    public:
-     template <typename CLASS>
-          requires some_class_type<CLASS>
+     template <typename CLASS, typename MEMBER>
+          requires some_class_type<CLASS> && a_const_member_function_pointer<CLASS, MEMBER, PARAMS...>
      constexpr CallHandler(const CLASS *class_instance,
-                           void (CLASS::*call_back)(PARAMS...) const noexcept,
+                           MEMBER subscriber,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(std::make_shared<
-                       MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARAMS...>>(
-               class_instance, call_back)),
+                       MemberCall<VoidReturnCode, Constant, NoException, CLASS, DumbPtr, PARAMS...>>(
+               class_instance, subscriber)),
            m_resource_manager(d) {
-          m_resource_id = m_call_back->hash();
+           assert(class_instance != nullptr);
+           assert(m_call_back != nullptr);
+           m_resource_id = m_call_back->hash();
      }
      template <typename CLASS>
           requires some_class_type<CLASS>
      constexpr CallHandler(CLASS *class_instance, void (CLASS::*call_back)(PARAMS...) noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(std::make_shared<
-                       MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARAMS...>>(
+                       MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, DumbPtr, PARAMS...>>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -166,7 +169,7 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
      constexpr CallHandler(CLASS &class_instance, void (CLASS::*call_back)(PARAMS...) noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(std::make_shared<
-                       MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARAMS...>>(
+                       MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, DumbPtr, PARAMS...>>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -177,7 +180,7 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
                            void (CLASS::*call_back)(PARAMS...) const noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(std::make_shared<
-                       MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARAMS...>>(
+                       MemberCall<VoidReturnCode, Constant, NoException, CLASS, DumbPtr, PARAMS...>>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -189,7 +192,7 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
                            void (CLASS::*call_back)(PARAMS...) noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(std::make_shared<
-                       MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, PARAMS...>>(
+                       MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, DumbPtr, PARAMS...>>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -200,7 +203,7 @@ class CallHandler<PsuedoMemberPointer, PARAMS...> : public Subscriber<PARAMS...>
                            void (CLASS::*call_back)(PARAMS...) const noexcept,
                            delegate_Resource_manager_t *d) noexcept
          : m_call_back(std::make_shared<
-                       MemberCall<VoidReturnCode, Constant, NoException, CLASS, PARAMS...>>(
+                       MemberCall<VoidReturnCode, Constant, NoException, CLASS, DumbPtr, PARAMS...>>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -237,11 +240,11 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
 
    public:
      template <typename CLASS>
-          requires some_class_type<CLASS>
+          requires some_class_type<CLASS> 
      constexpr CallHandler(const CLASS *class_instance,
                            void (CLASS::*call_back)() const noexcept,
                            delegate_Resource_manager_t *d) noexcept
-         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS>(
+         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS, DumbPtr>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -250,7 +253,7 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
           requires some_class_type<CLASS>
      constexpr CallHandler(CLASS *class_instance, void (CLASS::*call_back)() noexcept,
                            delegate_Resource_manager_t *d) noexcept
-         : m_call_back(new MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>(
+         : m_call_back(new MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, DumbPtr>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -260,7 +263,7 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
           requires some_class_type<CLASS>
      constexpr CallHandler(CLASS &class_instance, void (CLASS::*call_back)() noexcept,
                            delegate_Resource_manager_t *d) noexcept
-         : m_call_back(new MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>(
+         : m_call_back(new MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, DumbPtr>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -270,7 +273,7 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
      constexpr CallHandler(const CLASS &class_instance,
                            void (CLASS::*call_back)() const noexcept,
                            delegate_Resource_manager_t *d) noexcept
-         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS>(
+         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS, DumbPtr>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -280,7 +283,7 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
           requires some_class_type<CLASS>
      constexpr CallHandler(CLASS &&class_instance, void (CLASS::*call_back)() noexcept,
                            delegate_Resource_manager_t *d) noexcept
-         : m_call_back(new MemberCall<VoidReturnCode, NotConstant, NoException, CLASS>(
+         : m_call_back(new MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, DumbPtr>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();
@@ -290,7 +293,7 @@ template <> class CallHandler<PsuedoMemberPointer> : public Subscriber<> {
      constexpr CallHandler(const CLASS &&class_instance,
                            void (CLASS::*call_back)() const noexcept,
                            delegate_Resource_manager_t *d) noexcept
-         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS>(
+         : m_call_back(new MemberCall<VoidReturnCode, Constant, NoException, CLASS, DumbPtr>(
                class_instance, call_back)),
            m_resource_manager(d) {
           m_resource_id = m_call_back->hash();

@@ -5,6 +5,85 @@
 #include <type_traits>
 #include <functional>
 EDS_BEGIN_NAMESPACE
+/**
+ * @brief Determine if a type is a class.
+ *  
+ * @details eds::is_class_v is a UnaryTypeTrait.
+ * Removes pointers and references then checks whether T is a non-union class type. 
+ * 
+ * Different than std::is_class, this trait will return true if the type is a class or
+ * a pointer to a class or a reference to a class. There is no is_class::value, only
+ * is_class_v<T>.
+ * 
+ * @tparam T The type to check for class.
+ * 
+ * @returns Provides the member constant value which is equal to true, if T is a class type 
+ * (but not union). Otherwise, value is equal to false.
+ * 
+ * @example
+ * 
+ * `#include <iostream>`
+ * `#include <type_traits>`
+ *
+ * `struct A {};`
+ *
+ * `class B {};`
+ *
+ * `enum class E {};`
+ * 
+ * `union U { class UC {}; };`
+ * `static_assert(not std::is_class_v<U>);`
+ * `static_assert(std::is_class_v<U::UC>);`
+ * 
+ * `int main()`
+ * `{`
+ * `    std::cout << std::boolalpha;`
+ * `    std::cout << eds::is_class_v<A>::value << ": A\n";`
+ * `    std::cout << eds::is_class_v<B> << ": B\n";`
+ * `    std::cout << eds::is_class_v<B*> << ": B*\n";`
+ * `    std::cout << eds::is_class_v<B&> << ": B&\n";`
+ * `    std::cout << eds::is_class_v<const B> << ": const B\n";`
+ * `    std::cout << eds::is_class<E>::value << ": E\n";`
+ * `    std::cout << eds::is_class_v<int> << ": int\n";`
+ * `    std::cout << eds::is_class_v<struct S> << ": struct S (incomplete)\n";`
+ * `    std::cout << eds::is_class_v<class C> << ": class C (incomplete)\n";`
+ * `}`
+ *
+ * ### Output
+ * 
+ *        eds::is_class_v          | std::is_class_v              | different
+ * ------------------------------- | ---------------------------- | ---------
+ * true: A                         | true: A                      |
+ * true: B                         | true: B                      |   
+ * true: B*                        | false: B*                    | Yes 
+ * true B&                         | false: B&                    | Yes
+ * true: const B                   | true: const B                |
+ * false: E                        | false: E                     |
+ * false: int                      | false: int                   |
+ * true: struct S (incomplete)     | true: struct S (incomplete)  |
+ * true: class C (incomplete)      | true: class C (incomplete)   |
+ */
+template <typename T>
+static constexpr bool is_class_v = std::is_class_v<std::remove_pointer_t<std::remove_reference_t<T>>>; // transfered
+template <typename T>
+static constexpr bool is_copyable_v =
+    (std::is_copy_constructible_v<T> && std::is_copy_assignable_v<T>);
+template <typename T> static constexpr bool is_not_copyable_v = !is_copyable_v<T>;
+template <typename T>
+static constexpr bool is_movable_v =
+    std::is_move_constructible_v<std::remove_reference_t<T>> &&
+    std::is_move_assignable_v<std::remove_reference_t<T>>;
+template <typename T> static constexpr bool is_not_movable_v = !is_movable_v<T>;
+template <typename T>
+static constexpr bool is_not_copyable_and_not_movable_v = is_not_copyable_v<T> && is_not_movable_v<T>;
+template <typename T>
+static constexpr bool is_copyable_and_movable_v = is_copyable_v<T> && is_movable_v<T>;
+template <typename T>
+static constexpr bool is_copyable_or_movable_v = is_copyable_v<T> || is_movable_v<T>;
+template <typename T>
+static constexpr bool is_copyable_and_not_movable_v = is_copyable_v<T> && is_not_movable_v<T>;
+template <typename T>
+static constexpr bool is_not_copyable_and_movable_v = is_not_copyable_v<T> && is_movable_v<T>;
 class PSuedoObject {
    public:
      PSuedoObject() = delete;
@@ -59,6 +138,9 @@ EDS_CREATE_PSUEDO(PsuedoMemberPointer, ResourceHandlingRegime);
 EDS_CREATE_PSUEDO(FunctionPointer, ResourceHandlingRegime);
 EDS_CREATE_PSUEDO(LambdaRef, ResourceHandlingRegime);
 EDS_CREATE_PSUEDO(FunctionType, ResourceHandlingRegime);
+EDS_CREATE_PSUEDO(UniquePtr, ResourceHandlingRegime);
+EDS_CREATE_PSUEDO(SmartPtr, ResourceHandlingRegime);
+EDS_CREATE_PSUEDO(DumbPtr, ResourceHandlingRegime);
 template <typename T> struct is_psuedo : public std::false_type {};
 template <> struct is_psuedo<VoidReturnCode> : public std::true_type {};
 template <> struct is_psuedo<VoidParams> : public std::true_type {};
@@ -74,6 +156,9 @@ template <> struct is_psuedo<LambdaRef> : public std::true_type {};
 template <> struct is_psuedo<FunctionType> : public std::true_type {};
 template <> struct is_psuedo<YesException> : public std::true_type {};
 template <> struct is_psuedo<NoException> : public std::true_type {};
+template <> struct is_psuedo<UniquePtr> : public std::true_type {};
+template <> struct is_psuedo<SmartPtr> : public std::true_type {};
+template <> struct is_psuedo<DumbPtr> : public std::true_type {};
 template <typename T> constexpr static bool is_psuedo_v = is_psuedo<T>::value;
 template <typename T>
 constexpr static bool is_psuedo_constant_specification_v =
@@ -99,6 +184,7 @@ template <> struct is_void_return_code<VoidReturnCode> : public std::true_type {
 template <typename T>
 constexpr static bool is_void_return_code_v = is_void_return_code<T>::value;
 // template <typename T> bool is_pointer_to_regular_function_v = ;
+
 template <class...> struct FunctionTypeChecker;
 template <class RC, class... PARAMS> struct FunctionTypeChecker<RC(PARAMS...) noexcept> {
      using ReturnType_t = void;

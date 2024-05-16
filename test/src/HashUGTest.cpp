@@ -6,7 +6,7 @@
 #include "custom_gtest.hpp"
 #include "private/eds_hash.hpp"
 #include <memory>
-class HashFixture : public ::testing::Test {
+class HashFT : public ::testing::Test {
    public:
      class TestSource {
           void (TestSource::*_method_ptr)();
@@ -46,7 +46,7 @@ class HashFixture : public ::testing::Test {
      }
 };
 
-EDS_GTESTF(HashUGTest, HashFixture, LookForDuplicates) {
+EDS_GTESTF(HashUGTest, HashFT, LookForDuplicates) {
      run_test();
      constexpr int expected_duplicates = 0;
      EDS_PROBE(EXPECT_EQ(expected_duplicates, found_duplicates)
