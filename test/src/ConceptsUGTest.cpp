@@ -651,6 +651,8 @@ static constexpr int g_test_result_int_expected = 5;
           [[nodiscard("Required result bool True if is allowed, false if not")]]
           bool setConceptResult(CLASS *object_pointer,
                                 METHOD member_function_pointer) const noexcept {
+               EDS_UNUSEDPARAM(object_pointer);
+               EDS_UNUSEDPARAM(member_function_pointer);
                EDS_INFO(MESSAGE) << EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS, object_pointer));
                EDS_INFO(MESSAGE) << EDS_ERROR(__FILE__,__LINE__,EDS_2001(CLASS, object_pointer));
                return forbidden_specialization;
@@ -2324,7 +2326,7 @@ class ConceptsFT_UT010215_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010215);
 void ConceptsFT_UT010215_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<> testFunctions;
-     auto lambda = EDS_CONSERVATIVE_FUNCTION<void() noexcept>(
+     auto lambda = EDS_CONSERVATIVE_FUNCTION<void()>(
          []() EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = ConceptType::a_functional_lvalue_without_parameters;
@@ -2429,7 +2431,7 @@ class ConceptsFT_UT010225_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010225);
 void ConceptsFT_UT010225_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<> testFunctions;
-     auto functional = EDS_CONSERVATIVE_FUNCTION<void() noexcept>(
+     auto functional = EDS_CONSERVATIVE_FUNCTION<void()>(
          [&testFunctions]() EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = ConceptType::a_functional_lvalue_without_parameters;

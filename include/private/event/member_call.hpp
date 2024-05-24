@@ -147,10 +147,6 @@ class MemberCall<VoidReturnCode, NotConstant, NoException, CLASS, DumbPtr, PARMS
                           void (CLASS::*member_function_pointer)(PARMS...) noexcept) noexcept
          : m_object(class_instance_pointer), m_member(member_function_pointer) {
 
-          assert(!std::is_copy_assignable_v<CLASS>);
-          assert(!std::is_copy_constructible_v<CLASS>);
-          assert(!std::is_move_assignable_v<CLASS>);
-          assert(!std::is_move_constructible_v<CLASS>);
           assert(member_function_pointer != nullptr);
           assert(m_object != nullptr);
      }

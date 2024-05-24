@@ -8,6 +8,9 @@
 #define EDS_CONCATINATE(a, b) a##b
 #define EDS_CONCAT(LHS, RHS) EDS_CONCATINATE(LHS, RHS)
 #endif
+#ifndef EDS_UNUSEDPARAM
+     #define EDS_UNUSEDPARAM(param) (void)param
+#endif
 #ifndef EDS_EOL
 /// End of line character, the character literal is efficient that a string literal, std::endl
 /// also does a flush.

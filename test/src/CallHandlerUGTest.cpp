@@ -182,11 +182,11 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, MemberVoidConstNoexcept) {
 /// @test edsUGTest.CallHandlerTF.CallHandlerUGTest1VoidParamsNoexcept
 /// tests the creation of an eds::CallHandler for a static delegate with parameters.
 EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, LambdaVoidParamsNoexcept) {
-     using AdderTestWrapper_t = EDS CallHandler<EDS FunctionPointer, int *, int>;
+     using LocalTestWrapper_t = EDS CallHandler<EDS FunctionPointer, int *, int>;
      TestPointerResource resource;
      int total = 0;
      auto lambda = [](int *a, int b) noexcept -> void { *a += b; };
-     AdderTestWrapper_t ch(lambda, &resource);
+     LocalTestWrapper_t ch(lambda, &resource);
      ch(&total, 2);
      EDS_PROBE(EXPECT_EQ(2, total));
 }
@@ -200,8 +200,8 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, CaptureLambdaVoidParamsNoexcept) {
           *a += b;
           *a += another_total;
      };
-     using AdderTestWrapper_t = EDS CallHandler<EDS LambdaRef, decltype(lambda), int *, int>;
-     AdderTestWrapper_t ch(lambda, &resource);
+     using LocalTestWrapper_t = EDS CallHandler<EDS LambdaRef, decltype(lambda), int *, int>;
+     LocalTestWrapper_t ch(lambda, &resource);
      ch(&total, 2);
      EDS_PROBE(EXPECT_EQ(another_total + 2, total));
 }
@@ -212,8 +212,8 @@ EDS_GTESTF(CallHandlerUGTest, CallHandlerFT, CaptureLambdaVoidNoexcept) {
      int another_total = 2;
      int total = 0;
      auto lambda = [&]() noexcept -> void { total += another_total; };
-     using AdderTestWrapper_t = EDS CallHandler<EDS LambdaRef, decltype(lambda)>;
-     AdderTestWrapper_t ch(lambda, &resource);
+     using LocalTestWrapper_t = EDS CallHandler<EDS LambdaRef, decltype(lambda)>;
+     LocalTestWrapper_t ch(lambda, &resource);
      ch();
      EDS_PROBE(EXPECT_EQ(another_total, total));
 }
