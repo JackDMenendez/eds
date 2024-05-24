@@ -1,12 +1,8 @@
-﻿// sandbox.cpp: define el punto de entrada de la aplicación.
-//
-
+﻿#include <cstdarg>
+#include <cstdio>
+#include <fstream>
 #include <iostream>
+#include <memory>
+#include <string>
 
-int main() {
-     auto i = 0;
-     auto j = 0;
-     std::cout << "postfix: " << 2 * i++ << " new value of i: " << i << std::endl;
-     std::cout << "prefix: " << 2 * ++j << " new value of j: " << j <<  std::endl;
-     return 0;
-}
+int main(int argc, char const *argv[]) { return 0; }

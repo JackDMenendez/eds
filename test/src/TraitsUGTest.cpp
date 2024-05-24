@@ -1,13 +1,13 @@
 #if defined(EDSMSVSBUILD)
-#include "pch.h"
+     #include "pch.h"
 #else
-#include "gtest/gtest.h"
+     #include "gtest/gtest.h"
 #endif
 #include "custom_gtest.hpp"
 #include "private/eds_traits.hpp"
+#include <functional>
 #include <memory>
 #include <private/eds_env.hpp>
-#include <functional>
 #define UNIT_TEST_020100 UT020100
 #define UNIT_TEST_020101 UT020101
 #define UNIT_TEST_020102 UT020102
@@ -62,92 +62,106 @@ class TraitsFT : public ::testing::Test {
      union Upsilon {
           class UpsilonGama {};
      };
-class NotCopyableNotMovable {
-     bool m_i_said_it = false;
+     enum class TraitType : int {
+          a_regular_function_pointer,
+          a_lambda_rvalue,
+          member_pointer,
+          function_pointer,
+          none
+     };
+     static bool sm_ISaidIt;
+     static TraitType sm_ConceptType;
+     #ifdef P1169R4
+     using static_lambda_t = decltype([]() static {
+          TraitsFT::sm_ISaidIt = true;
+          TraitsFT::sm_ConceptType = TraitsFT::TraitType::a_lambda_rvalue;
+     });
+     #endif
+     class NotCopyableNotMovable {
+          bool m_i_said_it = false;
 
-   public:
-     NotCopyableNotMovable() noexcept = default;
-     ~NotCopyableNotMovable() noexcept = default;
-     NotCopyableNotMovable(const NotCopyableNotMovable &other) noexcept = delete;
-     NotCopyableNotMovable(NotCopyableNotMovable &&other) noexcept = delete;
-     NotCopyableNotMovable &operator=(const NotCopyableNotMovable &other) noexcept = delete;
-     NotCopyableNotMovable &operator=(NotCopyableNotMovable &&other) noexcept = delete;
+        public:
+          NotCopyableNotMovable() noexcept = default;
+          ~NotCopyableNotMovable() noexcept = default;
+          NotCopyableNotMovable(const NotCopyableNotMovable &other) noexcept = delete;
+          NotCopyableNotMovable(NotCopyableNotMovable &&other) noexcept = delete;
+          NotCopyableNotMovable &
+          operator=(const NotCopyableNotMovable &other) noexcept = delete;
+          NotCopyableNotMovable &operator=(NotCopyableNotMovable &&other) noexcept = delete;
 
-     void say_it() {
-          std::cout << "Not Copyable Not Movable";
-          m_i_said_it = true;
-     }
-     bool did_i_say_it() const noexcept { return m_i_said_it; }
-};
-class NotExplicit {
-     bool m_i_said_it = false;
+          void say_it() {
+               std::cout << "Not Copyable Not Movable";
+               m_i_said_it = true;
+          }
+          bool did_i_say_it() const noexcept { return m_i_said_it; }
+     };
+     class NotExplicit {
+          bool m_i_said_it = false;
 
-   public:
-     void say_it() {
-          std::cout << "Not Explicit";
-          m_i_said_it = true;
-     }
-     bool did_i_say_it() const noexcept { return m_i_said_it; }
-};
-class NotCopyableMovable {
-     bool m_i_said_it = false;
+        public:
+          void say_it() {
+               std::cout << "Not Explicit";
+               m_i_said_it = true;
+          }
+          bool did_i_say_it() const noexcept { return m_i_said_it; }
+     };
+     class NotCopyableMovable {
+          bool m_i_said_it = false;
 
-   public:
-     NotCopyableMovable() noexcept = default;
-     ~NotCopyableMovable() noexcept = default;
-     NotCopyableMovable(NotCopyableMovable &&other) noexcept = default;
-     NotCopyableMovable &operator=(NotCopyableMovable &&other) noexcept = default;
-     NotCopyableMovable(const NotCopyableMovable &other) noexcept = delete;
-     NotCopyableMovable &operator=(const NotCopyableMovable &other) noexcept = delete;
+        public:
+          NotCopyableMovable() noexcept = default;
+          ~NotCopyableMovable() noexcept = default;
+          NotCopyableMovable(NotCopyableMovable &&other) noexcept = default;
+          NotCopyableMovable &operator=(NotCopyableMovable &&other) noexcept = default;
+          NotCopyableMovable(const NotCopyableMovable &other) noexcept = delete;
+          NotCopyableMovable &operator=(const NotCopyableMovable &other) noexcept = delete;
 
-     void say_it() {
-          std::cout << "Not Copyable Movable";
-          m_i_said_it = true;
-     }
-     bool did_i_say_it() const noexcept { return m_i_said_it; }
-};
-class CopyableNotMovable {
-     bool m_i_said_it = false;
+          void say_it() {
+               std::cout << "Not Copyable Movable";
+               m_i_said_it = true;
+          }
+          bool did_i_say_it() const noexcept { return m_i_said_it; }
+     };
+     class CopyableNotMovable {
+          bool m_i_said_it = false;
 
-   public:
-     CopyableNotMovable() noexcept = default;
-     ~CopyableNotMovable() noexcept = default;
-     CopyableNotMovable(const CopyableNotMovable &other) noexcept = default;
-     CopyableNotMovable(CopyableNotMovable &&other) noexcept = delete;
-     CopyableNotMovable &operator=(const CopyableNotMovable &other) noexcept = default;
-     CopyableNotMovable &operator=(CopyableNotMovable &&other) noexcept = delete;
+        public:
+          CopyableNotMovable() noexcept = default;
+          ~CopyableNotMovable() noexcept = default;
+          CopyableNotMovable(const CopyableNotMovable &other) noexcept = default;
+          CopyableNotMovable(CopyableNotMovable &&other) noexcept = delete;
+          CopyableNotMovable &operator=(const CopyableNotMovable &other) noexcept = default;
+          CopyableNotMovable &operator=(CopyableNotMovable &&other) noexcept = delete;
 
-     void say_it() {
-          std::cout << "Copyable Not Movable";
-          m_i_said_it = true;
-     }
-     bool did_i_say_it() const noexcept { return m_i_said_it; }
-};
-class CopyableMovable {
-     bool m_i_said_it = false;
+          void say_it() {
+               std::cout << "Copyable Not Movable";
+               m_i_said_it = true;
+          }
+          bool did_i_say_it() const noexcept { return m_i_said_it; }
+     };
+     class CopyableMovable {
+          bool m_i_said_it = false;
 
-   public:
-     CopyableMovable() noexcept = default;
-     ~CopyableMovable() noexcept = default;
-     CopyableMovable(const CopyableMovable &other) noexcept = default;
-     CopyableMovable(CopyableMovable &&other) noexcept = default;
-     CopyableMovable &operator=(const CopyableMovable &other) noexcept = default;
-     CopyableMovable &operator=(CopyableMovable &&other) noexcept = default;
+        public:
+          CopyableMovable() noexcept = default;
+          ~CopyableMovable() noexcept = default;
+          CopyableMovable(const CopyableMovable &other) noexcept = default;
+          CopyableMovable(CopyableMovable &&other) noexcept = default;
+          CopyableMovable &operator=(const CopyableMovable &other) noexcept = default;
+          CopyableMovable &operator=(CopyableMovable &&other) noexcept = default;
 
-     void say_it() {
-          std::cout << "Copyable And Movable";
-          m_i_said_it = true;
-     }
-     bool did_i_say_it() const noexcept { return m_i_said_it; }
-};
-     enum class TraitType : int { a_regular_function_pointer, a_lambda_rvalue, member_pointer, function_pointer, none };
+          void say_it() {
+               std::cout << "Copyable And Movable";
+               m_i_said_it = true;
+          }
+          bool did_i_say_it() const noexcept { return m_i_said_it; }
+     };
      TraitsFT() noexcept = default;
      ~TraitsFT() noexcept override = default;
      void SetUp() override { sm_ConceptType = TraitType::none; }
      void TearDown() override {
           // Nothing to do so far
-     }
-     static TraitType sm_ConceptType;
+     } // TearDown
      static void testAStaticMemberPointer() noexcept {
           sm_ConceptType = TraitType::function_pointer;
      }
@@ -156,22 +170,21 @@ class CopyableMovable {
      using FunctionalTestFunction_t = std::function<void(TraitType) noexcept>;
      using TestFunctionNoParms_t = void() noexcept;
      using FunctionalTestFunctionNoParms_t = std::function<void() noexcept>;
+     template <class CLASS> using TestMember_t = void (CLASS::*)(TraitType) noexcept;
      template <class CLASS>
-     using TestMember_t = void(CLASS::*)(TraitType) noexcept;
+     using FunctionalTestMember_t = std::function<void (CLASS::*)(TraitType) noexcept>;
      template <class CLASS>
-     using FunctionalTestMember_t = std::function<void(CLASS::*)(TraitType) noexcept>;
+     using TestMemberConst_t = void (CLASS::*)(TraitType) const noexcept;
      template <class CLASS>
-     using TestMemberConst_t = void(CLASS::*)(TraitType) const noexcept;
+     using FunctionalTestMemberConst_t =
+         std::function<void (CLASS::*)(TraitType) const noexcept>;
+     template <class CLASS> using TestMemberNoParams_t = void (CLASS::*)() noexcept;
      template <class CLASS>
-     using FunctionalTestMemberConst_t = std::function<void(CLASS::*)(TraitType) const noexcept>;
+     using FunctionalTestMemberNoParams_t = std::function<void (CLASS::*)() noexcept>;
+     template <class CLASS> using TestMemberNoParamsConst_t = void (CLASS::*)() const noexcept;
      template <class CLASS>
-     using TestMemberNoParams_t = void(CLASS::*)() noexcept;
-     template <class CLASS>
-     using FunctionalTestMemberNoParams_t = std::function<void(CLASS::*)() noexcept>;
-     template <class CLASS>
-     using TestMemberNoParamsConst_t = void(CLASS::*)() const noexcept;
-     template <class CLASS>
-     using FunctionalTestMemberNoParamsConst_t = std::function<void(CLASS::*)() const noexcept>;
+     using FunctionalTestMemberNoParamsConst_t =
+         std::function<void (CLASS::*)() const noexcept>;
      // template<class...>
      // class TestRegularFunctions;
      template <typename... PARAMS> class TestRegularFunctions {
@@ -197,17 +210,17 @@ class CopyableMovable {
           void setBlindConceptResult(FUNC const *pointer_to_function) const noexcept {
                pointer_to_function();
           }
-          template <class CLASS, class FUNC> 
-          void setConceptResult(CLASS*class_instance, FUNC *f) noexcept {
+          template <class CLASS, class FUNC>
+          void setConceptResult(CLASS *class_instance, FUNC *f) noexcept {
                f(TraitType::a_regular_function_pointer);
           }
-          template <typename FUNC> 
-          void setConceptResult(FUNC &&f) const noexcept {
+          template <typename FUNC> void setConceptResult(FUNC &&f) const noexcept {
                f(TraitType::a_regular_function_pointer);
           }
           ~TestRegularFunctions() noexcept = default;
      };
 };
+bool TraitsFT::sm_ISaidIt = false;
 TraitsFT::TraitType TraitsFT::sm_ConceptType = TraitType::none;
 #ifdef UNIT_TEST_020100
 /**
@@ -237,8 +250,8 @@ EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020100);
 void TraitsFT_UT020100_Test::TestBody() {
      EDS_PROBEW(000010, EXPECT_TRUE(eds::is_class_v<TraitsFT::Alpha>));
      EDS_PROBEW(000020, EXPECT_TRUE(eds::is_class_v<TraitsFT::Beta>));
-     EDS_PROBEW(000030, EXPECT_TRUE(eds::is_class_v<TraitsFT::Beta*>));
-     EDS_PROBEW(000040, EXPECT_TRUE(eds::is_class_v<TraitsFT::Beta&>));
+     EDS_PROBEW(000030, EXPECT_TRUE(eds::is_class_v<TraitsFT::Beta *>));
+     EDS_PROBEW(000040, EXPECT_TRUE(eds::is_class_v<TraitsFT::Beta &>));
      EDS_PROBEW(000050, EXPECT_TRUE(eds::is_class_v<const TraitsFT::Beta>));
      EDS_PROBEW(000060, EXPECT_FALSE(eds::is_class_v<TraitsFT::Epsilon>));
      EDS_PROBEW(000070, EXPECT_FALSE(eds::is_class_v<int>));
@@ -414,11 +427,20 @@ class TraitsFT_UT020125_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020125);
 void TraitsFT_UT020125_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_FALSE(eds::is_not_copyable_and_not_movable_v<TraitsFT::NotCopyableMovable>));
-     EDS_PROBEW(000020, EXPECT_TRUE(eds::is_not_copyable_and_not_movable_v<TraitsFT::NotCopyableNotMovable>));
-     EDS_PROBEW(000030, EXPECT_FALSE(eds::is_not_copyable_and_not_movable_v<TraitsFT::CopyableNotMovable>));
-     EDS_PROBEW(000040, EXPECT_FALSE(eds::is_not_copyable_and_not_movable_v<TraitsFT::CopyableMovable>));
-     EDS_PROBEW(000050, EXPECT_FALSE(eds::is_not_copyable_and_not_movable_v<TraitsFT::NotExplicit>));
+     EDS_PROBEW(
+         000010,
+         EXPECT_FALSE(eds::is_not_copyable_and_not_movable_v<TraitsFT::NotCopyableMovable>));
+     EDS_PROBEW(
+         000020,
+         EXPECT_TRUE(eds::is_not_copyable_and_not_movable_v<TraitsFT::NotCopyableNotMovable>));
+     EDS_PROBEW(
+         000030,
+         EXPECT_FALSE(eds::is_not_copyable_and_not_movable_v<TraitsFT::CopyableNotMovable>));
+     EDS_PROBEW(
+         000040,
+         EXPECT_FALSE(eds::is_not_copyable_and_not_movable_v<TraitsFT::CopyableMovable>));
+     EDS_PROBEW(000050,
+                EXPECT_FALSE(eds::is_not_copyable_and_not_movable_v<TraitsFT::NotExplicit>));
 }
 #endif // UNIT_TEST_020125
 #ifdef UNIT_TEST_020130
@@ -449,10 +471,14 @@ class TraitsFT_UT020130_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020130);
 void TraitsFT_UT020130_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_FALSE(eds::is_copyable_and_movable_v<TraitsFT::NotCopyableMovable>));
-     EDS_PROBEW(000020, EXPECT_FALSE(eds::is_copyable_and_movable_v<TraitsFT::NotCopyableNotMovable>));
-     EDS_PROBEW(000030, EXPECT_FALSE(eds::is_copyable_and_movable_v<TraitsFT::CopyableNotMovable>));
-     EDS_PROBEW(000040, EXPECT_TRUE(eds::is_copyable_and_movable_v<TraitsFT::CopyableMovable>));
+     EDS_PROBEW(000010,
+                EXPECT_FALSE(eds::is_copyable_and_movable_v<TraitsFT::NotCopyableMovable>));
+     EDS_PROBEW(000020,
+                EXPECT_FALSE(eds::is_copyable_and_movable_v<TraitsFT::NotCopyableNotMovable>));
+     EDS_PROBEW(000030,
+                EXPECT_FALSE(eds::is_copyable_and_movable_v<TraitsFT::CopyableNotMovable>));
+     EDS_PROBEW(000040,
+                EXPECT_TRUE(eds::is_copyable_and_movable_v<TraitsFT::CopyableMovable>));
      EDS_PROBEW(000050, EXPECT_TRUE(eds::is_copyable_and_movable_v<TraitsFT::NotExplicit>));
 }
 #endif // UNIT_TEST_020130
@@ -484,9 +510,12 @@ class TraitsFT_UT020135_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020135);
 void TraitsFT_UT020135_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_TRUE(eds::is_copyable_or_movable_v<TraitsFT::NotCopyableMovable>));
-     EDS_PROBEW(000020, EXPECT_FALSE(eds::is_copyable_or_movable_v<TraitsFT::NotCopyableNotMovable>));
-     EDS_PROBEW(000030, EXPECT_TRUE(eds::is_copyable_or_movable_v<TraitsFT::CopyableNotMovable>));
+     EDS_PROBEW(000010,
+                EXPECT_TRUE(eds::is_copyable_or_movable_v<TraitsFT::NotCopyableMovable>));
+     EDS_PROBEW(000020,
+                EXPECT_FALSE(eds::is_copyable_or_movable_v<TraitsFT::NotCopyableNotMovable>));
+     EDS_PROBEW(000030,
+                EXPECT_TRUE(eds::is_copyable_or_movable_v<TraitsFT::CopyableNotMovable>));
      EDS_PROBEW(000040, EXPECT_TRUE(eds::is_copyable_or_movable_v<TraitsFT::CopyableMovable>));
      EDS_PROBEW(000050, EXPECT_TRUE(eds::is_copyable_or_movable_v<TraitsFT::NotExplicit>));
 }
@@ -519,11 +548,17 @@ class TraitsFT_UT020140_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020140);
 void TraitsFT_UT020140_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_FALSE(eds::is_copyable_and_not_movable_v<TraitsFT::NotCopyableMovable>));
-     EDS_PROBEW(000020, EXPECT_FALSE(eds::is_copyable_and_not_movable_v<TraitsFT::NotCopyableNotMovable>));
-     EDS_PROBEW(000030, EXPECT_TRUE(eds::is_copyable_and_not_movable_v<TraitsFT::CopyableNotMovable>));
-     EDS_PROBEW(000040, EXPECT_FALSE(eds::is_copyable_and_not_movable_v<TraitsFT::CopyableMovable>));
-     EDS_PROBEW(000050, EXPECT_FALSE(eds::is_copyable_and_not_movable_v<TraitsFT::NotExplicit>));
+     EDS_PROBEW(000010, EXPECT_FALSE(
+                            eds::is_copyable_and_not_movable_v<TraitsFT::NotCopyableMovable>));
+     EDS_PROBEW(
+         000020,
+         EXPECT_FALSE(eds::is_copyable_and_not_movable_v<TraitsFT::NotCopyableNotMovable>));
+     EDS_PROBEW(000030,
+                EXPECT_TRUE(eds::is_copyable_and_not_movable_v<TraitsFT::CopyableNotMovable>));
+     EDS_PROBEW(000040,
+                EXPECT_FALSE(eds::is_copyable_and_not_movable_v<TraitsFT::CopyableMovable>));
+     EDS_PROBEW(000050,
+                EXPECT_FALSE(eds::is_copyable_and_not_movable_v<TraitsFT::NotExplicit>));
 }
 #endif // UNIT_TEST_020140
 #ifdef UNIT_TEST_020145
@@ -554,11 +589,17 @@ class TraitsFT_UT020145_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020145);
 void TraitsFT_UT020145_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_TRUE(eds::is_not_copyable_and_movable_v<TraitsFT::NotCopyableMovable>));
-     EDS_PROBEW(000020, EXPECT_FALSE(eds::is_not_copyable_and_movable_v<TraitsFT::NotCopyableNotMovable>));
-     EDS_PROBEW(000030, EXPECT_FALSE(eds::is_not_copyable_and_movable_v<TraitsFT::CopyableNotMovable>));
-     EDS_PROBEW(000040, EXPECT_FALSE(eds::is_not_copyable_and_movable_v<TraitsFT::CopyableMovable>));
-     EDS_PROBEW(000050, EXPECT_FALSE(eds::is_not_copyable_and_movable_v<TraitsFT::NotExplicit>));
+     EDS_PROBEW(000010,
+                EXPECT_TRUE(eds::is_not_copyable_and_movable_v<TraitsFT::NotCopyableMovable>));
+     EDS_PROBEW(
+         000020,
+         EXPECT_FALSE(eds::is_not_copyable_and_movable_v<TraitsFT::NotCopyableNotMovable>));
+     EDS_PROBEW(000030, EXPECT_FALSE(
+                            eds::is_not_copyable_and_movable_v<TraitsFT::CopyableNotMovable>));
+     EDS_PROBEW(000040,
+                EXPECT_FALSE(eds::is_not_copyable_and_movable_v<TraitsFT::CopyableMovable>));
+     EDS_PROBEW(000050,
+                EXPECT_FALSE(eds::is_not_copyable_and_movable_v<TraitsFT::NotExplicit>));
 }
 #endif // UNIT_TEST_020145
 #ifdef UNIT_TEST_020150
@@ -584,15 +625,18 @@ class TraitsFT_UT020150_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020150);
 void TraitsFT_UT020150_Test::TestBody() {
-     EDS_PROBEW(000010,EXPECT_TRUE(eds::FunctionTypeChecker<TestFunction_t>::is_function_v));
-     EDS_PROBEW(000020,EXPECT_TRUE(eds::FunctionTypeChecker<TestFunction_t>::is_noexcept_v));
-     EDS_PROBEW(000030,EXPECT_TRUE(eds::FunctionTypeChecker<TestFunction_t>::is_return_code_void_v));
-     EDS_PROBEW(000040,EXPECT_TRUE(eds::FunctionTypeChecker<TestFunction_t>::is_eligible_delegate_v));
-     EDS_PROBEW(000050,EXPECT_FALSE(eds::FunctionTypeChecker<TestFunction_t>::is_member_function_v));
-     EDS_PROBEW(000060,EXPECT_FALSE(eds::FunctionTypeChecker<TestFunction_t>::is_constant_v));
+     EDS_PROBEW(000010, EXPECT_TRUE(eds::FunctionTypeChecker<TestFunction_t>::is_function_v));
+     EDS_PROBEW(000020, EXPECT_TRUE(eds::FunctionTypeChecker<TestFunction_t>::is_noexcept_v));
+     EDS_PROBEW(000030,
+                EXPECT_TRUE(eds::FunctionTypeChecker<TestFunction_t>::is_return_code_void_v));
+     EDS_PROBEW(000040,
+                EXPECT_TRUE(eds::FunctionTypeChecker<TestFunction_t>::is_eligible_delegate_v));
+     EDS_PROBEW(000050,
+                EXPECT_FALSE(eds::FunctionTypeChecker<TestFunction_t>::is_member_function_v));
+     EDS_PROBEW(000060, EXPECT_FALSE(eds::FunctionTypeChecker<TestFunction_t>::is_constant_v));
 }
 #endif // UNIT_TEST_020150
-//--------------------------------------------------------------------------------------------------- 
+//---------------------------------------------------------------------------------------------------
 #ifdef UNIT_TEST_020155
 /**
  @brief Tests the trait eds::FunctionTypeChecker with TraitsFT::TestFunctionNoParams_t
@@ -616,15 +660,24 @@ class TraitsFT_UT020155_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020155);
 void TraitsFT_UT020155_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_function_v));
-     EDS_PROBEW(000020, EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_noexcept_v));
-     EDS_PROBEW(000030, EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_return_code_void_v));
-     EDS_PROBEW(000040, EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_eligible_delegate_v));
-     EDS_PROBEW(000050, EXPECT_FALSE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_member_function_v));
-     EDS_PROBEW(000060, EXPECT_FALSE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_constant_v));
+     EDS_PROBEW(000010,
+                EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_function_v));
+     EDS_PROBEW(000020,
+                EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_noexcept_v));
+     EDS_PROBEW(
+         000030,
+         EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_return_code_void_v));
+     EDS_PROBEW(
+         000040,
+         EXPECT_TRUE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_eligible_delegate_v));
+     EDS_PROBEW(
+         000050,
+         EXPECT_FALSE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_member_function_v));
+     EDS_PROBEW(000060,
+                EXPECT_FALSE(eds::FunctionTypeChecker<TestFunctionNoParms_t>::is_constant_v));
 }
 #endif // UNIT_TEST_020140
-//--------------------------------------------------------------------------------------------------- 
+//---------------------------------------------------------------------------------------------------
 #ifdef UNIT_TEST_020160
 /**
  @brief Tests the trait eds::FunctionTypeChecker with TraitsFT::TestMember_t
@@ -635,7 +688,7 @@ void TraitsFT_UT020155_Test::TestBody() {
 
 @ref edsUGTest.Traits.UT020160
 
-@sa TraitsFT::TestMember_t           
+@sa TraitsFT::TestMember_t
 @sa eds::FunctionTypeChecker
 
 @anchor UT020160
@@ -648,15 +701,30 @@ class TraitsFT_UT020160_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020160);
 void TraitsFT_UT020160_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_function_v));
-     EDS_PROBEW(000020, EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_noexcept_v));
-     EDS_PROBEW(000030, EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_return_code_void_v));
-     EDS_PROBEW(000040, EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_eligible_delegate_v));
-     EDS_PROBEW(000050, EXPECT_TRUE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_member_function_v));
-     EDS_PROBEW(000060, EXPECT_FALSE(eds::FunctionTypeChecker<TestMember_t<TestRegularFunctions<TraitType>>>::is_constant_v));
+     EDS_PROBEW(000010,
+                EXPECT_TRUE(eds::FunctionTypeChecker<
+                            TestMember_t<TestRegularFunctions<TraitType>>>::is_function_v));
+     EDS_PROBEW(000020,
+                EXPECT_TRUE(eds::FunctionTypeChecker<
+                            TestMember_t<TestRegularFunctions<TraitType>>>::is_noexcept_v));
+     EDS_PROBEW(
+         000030,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMember_t<TestRegularFunctions<TraitType>>>::is_return_code_void_v));
+     EDS_PROBEW(
+         000040,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMember_t<TestRegularFunctions<TraitType>>>::is_eligible_delegate_v));
+     EDS_PROBEW(
+         000050,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMember_t<TestRegularFunctions<TraitType>>>::is_member_function_v));
+     EDS_PROBEW(000060,
+                EXPECT_FALSE(eds::FunctionTypeChecker<
+                             TestMember_t<TestRegularFunctions<TraitType>>>::is_constant_v));
 }
 #endif // UNIT_TEST_020160
-//--------------------------------------------------------------------------------------------------- 
+//---------------------------------------------------------------------------------------------------
 #ifdef UNIT_TEST_020165
 /**
  @brief Tests the trait eds::FunctionTypeChecker with TraitsFT::TestMemberNoParams_t
@@ -667,7 +735,7 @@ void TraitsFT_UT020160_Test::TestBody() {
 
 @ref edsUGTest.Traits.UT020165
 
-@sa TraitsFT::TestMemberNoParams_t           
+@sa TraitsFT::TestMemberNoParams_t
 @sa eds::FunctionTypeChecker
 
 @anchor UT020165
@@ -680,15 +748,30 @@ class TraitsFT_UT020165_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020165);
 void TraitsFT_UT020165_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_function_v));
-     EDS_PROBEW(000020, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_noexcept_v));
-     EDS_PROBEW(000030, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_return_code_void_v));
-     EDS_PROBEW(000040, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_eligible_delegate_v));
-     EDS_PROBEW(000050, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_member_function_v));
-     EDS_PROBEW(000060, EXPECT_FALSE(eds::FunctionTypeChecker<TestMemberNoParams_t<TestRegularFunctions<>>>::is_constant_v));
+     EDS_PROBEW(000010,
+                EXPECT_TRUE(eds::FunctionTypeChecker<
+                            TestMemberNoParams_t<TestRegularFunctions<>>>::is_function_v));
+     EDS_PROBEW(000020,
+                EXPECT_TRUE(eds::FunctionTypeChecker<
+                            TestMemberNoParams_t<TestRegularFunctions<>>>::is_noexcept_v));
+     EDS_PROBEW(
+         000030,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMemberNoParams_t<TestRegularFunctions<>>>::is_return_code_void_v));
+     EDS_PROBEW(
+         000040,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMemberNoParams_t<TestRegularFunctions<>>>::is_eligible_delegate_v));
+     EDS_PROBEW(
+         000050,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMemberNoParams_t<TestRegularFunctions<>>>::is_member_function_v));
+     EDS_PROBEW(000060,
+                EXPECT_FALSE(eds::FunctionTypeChecker<
+                             TestMemberNoParams_t<TestRegularFunctions<>>>::is_constant_v));
 }
 #endif // UNIT_TEST_020165
-//--------------------------------------------------------------------------------------------------- 
+//---------------------------------------------------------------------------------------------------
 #ifdef UNIT_TEST_020170
 /**
  @brief Tests the trait eds::FunctionTypeChecker with TraitsFT::TestMemberConst_t
@@ -699,7 +782,7 @@ void TraitsFT_UT020165_Test::TestBody() {
 
 @ref edsUGTest.Traits.UT020170
 
-@sa TraitsFT::TestMemberConst_t           
+@sa TraitsFT::TestMemberConst_t
 @sa eds::FunctionTypeChecker
 
 @anchor UT020170
@@ -712,15 +795,36 @@ class TraitsFT_UT020170_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020170);
 void TraitsFT_UT020170_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_function_v));
-     EDS_PROBEW(000020, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_noexcept_v));
-     EDS_PROBEW(000030, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_return_code_void_v));
-     EDS_PROBEW(000040, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_eligible_delegate_v));
-     EDS_PROBEW(000050, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_member_function_v));
-     EDS_PROBEW(000060, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_constant_v));
+     EDS_PROBEW(
+         000010,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_function_v));
+     EDS_PROBEW(
+         000020,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_noexcept_v));
+     EDS_PROBEW(
+         000030,
+         EXPECT_TRUE(
+             eds::FunctionTypeChecker<
+                 TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_return_code_void_v));
+     EDS_PROBEW(
+         000040,
+         EXPECT_TRUE(
+             eds::FunctionTypeChecker<
+                 TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_eligible_delegate_v));
+     EDS_PROBEW(
+         000050,
+         EXPECT_TRUE(
+             eds::FunctionTypeChecker<
+                 TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_member_function_v));
+     EDS_PROBEW(
+         000060,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMemberConst_t<TestRegularFunctions<TraitType>>>::is_constant_v));
 }
 #endif // UNIT_TEST_020170
-//--------------------------------------------------------------------------------------------------- 
+//---------------------------------------------------------------------------------------------------
 #ifdef UNIT_TEST_020175
 /**
  @brief Tests the trait eds::FunctionTypeChecker with TraitsFT::TestMemberNoParamsConst_t
@@ -731,7 +835,7 @@ void TraitsFT_UT020170_Test::TestBody() {
 
 @ref edsUGTest.Traits.UT020175
 
-@sa TraitsFT::TestMemberNoParamsConst_t           
+@sa TraitsFT::TestMemberNoParamsConst_t
 @sa eds::FunctionTypeChecker
 
 @anchor UT020175
@@ -744,13 +848,33 @@ class TraitsFT_UT020175_Test : public TraitsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(TraitsFT, UT020175);
 void TraitsFT_UT020175_Test::TestBody() {
-     EDS_PROBEW(000010, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_function_v));
-     EDS_PROBEW(000020, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_noexcept_v));
-     EDS_PROBEW(000030, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_return_code_void_v));
-     EDS_PROBEW(000040, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_eligible_delegate_v));
-     EDS_PROBEW(000050, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_member_function_v));
-     EDS_PROBEW(000060, EXPECT_TRUE(eds::FunctionTypeChecker<TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_constant_v));
+     EDS_PROBEW(
+         000010,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_function_v));
+     EDS_PROBEW(
+         000020,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_noexcept_v));
+     EDS_PROBEW(
+         000030,
+         EXPECT_TRUE(
+             eds::FunctionTypeChecker<
+                 TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_return_code_void_v));
+     EDS_PROBEW(
+         000040,
+         EXPECT_TRUE(
+             eds::FunctionTypeChecker<
+                 TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_eligible_delegate_v));
+     EDS_PROBEW(
+         000050,
+         EXPECT_TRUE(
+             eds::FunctionTypeChecker<
+                 TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_member_function_v));
+     EDS_PROBEW(
+         000060,
+         EXPECT_TRUE(eds::FunctionTypeChecker<
+                     TestMemberNoParamsConst_t<TestRegularFunctions<>>>::is_constant_v));
 }
 #endif // UNIT_TEST_020175
 //---------------------------------------------------------------------------------------------------
-

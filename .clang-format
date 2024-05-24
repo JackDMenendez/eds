@@ -15,6 +15,7 @@ BreakConstructorInitializers: BeforeColon
 ColumnLimit: 95
 ConstructorInitializerIndentWidth : 4
 ContinuationIndentWidth: 4
+IndentPPDirectives: BeforeHash
 IndentWidth: 5
 Standard: c++20
 ...

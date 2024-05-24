@@ -13,8 +13,28 @@
 #include <functional>
 #include <type_traits>
 EDS_BEGIN_NAMESPACE
+template <typename T>
+concept a_class = eds::is_class_v<T>;
+template <typename T>
+concept something_copyable = eds::is_copyable_v<T>;
+template <typename T>
+concept something_not_copyable = eds::is_not_copyable_v<T>;
 template <class T>
 concept some_class_type = std::is_class<T>::value;
+template <typename T>
+concept something_movable = eds::is_movable_v<T>;
+template <typename T>
+concept something_not_movable = eds::is_not_movable_v<T>;
+template <typename T>
+concept something_not_copyable_and_not_movable = eds::is_not_copyable_and_not_movable_v<T>;
+template <typename T>
+concept something_copyable_and_movable = eds::is_copyable_and_movable_v<T>;
+template <typename T>
+concept something_copyable_or_movable = eds::is_copyable_or_movable_v<T>;
+template <typename T>
+concept something_copyable_but_not_movable = eds::is_copyable_and_not_movable_v<T>;
+template <typename T>
+concept something_not_copyable_but_movable = eds::is_not_copyable_and_movable_v<T>;
 /// @brief A concept that checks if a type is psuedo class specifying constant or no constant
 /// call
 template <class T>

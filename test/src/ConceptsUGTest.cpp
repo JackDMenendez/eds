@@ -4,7 +4,7 @@
  * @brief  Implement Unit Concepts Testing
  * @details This file contains the implementation of the unit tests for the concepts.
  * @sa unit_test_concepts_page
- * @author Joaquín "Jack" D. Menéndez
+ * @author Joaquï¿½n "Jack" D. Menï¿½ndez
  * @date   March 2024
  * @todo Allow only smart pointers to the object for member functions and lambdas, also make for object pointers we can give a message via static assert
  */
@@ -80,7 +80,94 @@
  */
 class ConceptsFT : public ::testing::Test {
    public:
-static constexpr bool supported_specialization = true;
+     enum class object_properties { not_copyable_and_not_movable,
+          copyable_and_not_movable,
+          copyable_and_movable,
+          not_copyable_and_movable
+     };
+     struct test_object_interface {
+          virtual ~test_object_interface() = default;
+          virtual bool test(object_properties expected_properties) = 0;
+     };
+class NotCopyableNotMovable {
+     bool m_i_said_it = false;
+
+   public:
+     NotCopyableNotMovable() noexcept = default;
+     ~NotCopyableNotMovable() noexcept = default;
+     NotCopyableNotMovable(const NotCopyableNotMovable &other) noexcept = delete;
+     NotCopyableNotMovable(NotCopyableNotMovable &&other) noexcept = delete;
+     NotCopyableNotMovable &operator=(const NotCopyableNotMovable &other) noexcept = delete;
+     NotCopyableNotMovable &operator=(NotCopyableNotMovable &&other) noexcept = delete;
+
+     void say_it() {
+          std::cout << "Not Copyable Not Movable";
+          m_i_said_it = true;
+     }
+     bool did_i_say_it() const noexcept { return m_i_said_it; }
+};
+class NotExplicit {
+     bool m_i_said_it = false;
+
+   public:
+     void say_it() {
+          std::cout << "Not Explicit";
+          m_i_said_it = true;
+     }
+     bool did_i_say_it() const noexcept { return m_i_said_it; }
+};
+class NotCopyableMovable {
+     bool m_i_said_it = false;
+
+   public:
+     NotCopyableMovable() noexcept = default;
+     ~NotCopyableMovable() noexcept = default;
+     NotCopyableMovable(NotCopyableMovable &&other) noexcept = default;
+     NotCopyableMovable &operator=(NotCopyableMovable &&other) noexcept = default;
+     NotCopyableMovable(const NotCopyableMovable &other) noexcept = delete;
+     NotCopyableMovable &operator=(const NotCopyableMovable &other) noexcept = delete;
+
+     void say_it() {
+          std::cout << "Not Copyable Movable";
+          m_i_said_it = true;
+     }
+     bool did_i_say_it() const noexcept { return m_i_said_it; }
+};
+class CopyableNotMovable {
+     bool m_i_said_it = false;
+
+   public:
+     CopyableNotMovable() noexcept = default;
+     ~CopyableNotMovable() noexcept = default;
+     CopyableNotMovable(const CopyableNotMovable &other) noexcept = default;
+     CopyableNotMovable(CopyableNotMovable &&other) noexcept = delete;
+     CopyableNotMovable &operator=(const CopyableNotMovable &other) noexcept = default;
+     CopyableNotMovable &operator=(CopyableNotMovable &&other) noexcept = delete;
+
+     void say_it() {
+          std::cout << "Copyable Not Movable";
+          m_i_said_it = true;
+     }
+     bool did_i_say_it() const noexcept { return m_i_said_it; }
+};
+class CopyableMovable {
+     bool m_i_said_it = false;
+
+   public:
+     CopyableMovable() noexcept = default;
+     ~CopyableMovable() noexcept = default;
+     CopyableMovable(const CopyableMovable &other) noexcept = default;
+     CopyableMovable(CopyableMovable &&other) noexcept = default;
+     CopyableMovable &operator=(const CopyableMovable &other) noexcept = default;
+     CopyableMovable &operator=(CopyableMovable &&other) noexcept = default;
+
+     void say_it() {
+          std::cout << "Copyable And Movable";
+          m_i_said_it = true;
+     }
+     bool did_i_say_it() const noexcept { return m_i_said_it; }
+};
+     static constexpr bool supported_specialization = true;
 static constexpr bool forbidden_specialization = false;
 static bool g_test_result;
 static int g_test_result_int;
@@ -552,7 +639,7 @@ static constexpr int g_test_result_int_expected = 5;
           [[nodiscard("Required result bool True if is allowed, false if not")]]
           bool setConceptResult(CLASS *object_pointer,
                                 METHOD member_function_pointer) const noexcept {
-                #pragma message(EDS_WARNING(__LOCATION__,EDS_1001(CLASS,object_pointer)))
+                #pragma message(EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS,object_pointer)))
                (object_pointer->*member_function_pointer)(
                    ConceptType::a_member_function_pointer);
                return supported_specialization;
@@ -564,8 +651,8 @@ static constexpr int g_test_result_int_expected = 5;
           [[nodiscard("Required result bool True if is allowed, false if not")]]
           bool setConceptResult(CLASS *object_pointer,
                                 METHOD member_function_pointer) const noexcept {
-               EDS_INFO(MESSAGE) << EDS_WARNING(EDS_1001(CLASS, object_pointer));
-               EDS_INFO(MESSAGE) << EDS_ERROR(EDS_2001(CLASS, object_pointer));
+               EDS_INFO(MESSAGE) << EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS, object_pointer));
+               EDS_INFO(MESSAGE) << EDS_ERROR(__FILE__,__LINE__,EDS_2001(CLASS, object_pointer));
                return forbidden_specialization;
           }
           template <class CLASS, typename METHOD>
@@ -575,8 +662,8 @@ static constexpr int g_test_result_int_expected = 5;
           [[nodiscard("Required result bool True if is allowed, false if not")]]
           bool setConceptResult(CLASS *object_pointer,
                                 METHOD member_function_pointer) const noexcept {
-               EDS_INFO(MESSAGE) << EDS_WARNING(EDS_1001(CLASS, object_pointer));
-               EDS_INFO(MESSAGE) << EDS_ERROR(EDS_2001(CLASS, object_pointer));
+               EDS_INFO(MESSAGE) << EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS, object_pointer));
+               EDS_INFO(MESSAGE) << EDS_ERROR(__FILE__,__LINE__,EDS_2001(CLASS, object_pointer));
                return forbidden_specialization;
           }
           template <class CLASS, typename METHOD>
@@ -620,7 +707,7 @@ static constexpr int g_test_result_int_expected = 5;
                         eds::some_class_type<CLASS>
           [[nodiscard("Required result bool True if is allowed, false if not")]]
           bool setConceptResult(CLASS *object, METHOD &method) const noexcept {
-                #pragma message(EDS_WARNING(__LOCATION__,EDS_1001(CLASS,object_pointer)))
+                #pragma message(EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS,object_pointer)))
                method(object, ConceptType::a_functional_lvalue);
                return supported_specialization;
           }
@@ -665,7 +752,7 @@ static constexpr int g_test_result_int_expected = 5;
                         eds::nonmovable<CLASS>
           [[nodiscard("Required result bool True if is allowed, false if not")]]
           bool setConceptResult(const CLASS *object, FUNC f) const noexcept {
-                #pragma message(EDS_WARNING(__LOCATION__,EDS_1001(CLASS,object_pointer)))
+                #pragma message(EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS,object_pointer)))
                (object->*f)(ConceptType::a_member_function_pointer);
                return supported_specialization;
           }
@@ -838,7 +925,7 @@ static constexpr int g_test_result_int_expected = 5;
           [[nodiscard("Required result bool True if is allowed, false if not")]]
           bool setConceptResult(CLASS *object_pointer,
                                 METHOD member_function_pointer) const noexcept {
-                #pragma message(EDS_WARNING(__LOCATION__,EDS_1001(CLASS,object_pointer)))
+                #pragma message(EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS,object_pointer)))
                (object_pointer->*member_function_pointer)();
                return supported_specialization;
           }
@@ -881,7 +968,7 @@ static constexpr int g_test_result_int_expected = 5;
                         eds::some_class_type<CLASS>
           [[nodiscard("Required result bool True if is allowed, false if not")]]
           bool setConceptResult(CLASS *object, METHOD method) const noexcept {
-                #pragma message(EDS_WARNING(__LOCATION__,EDS_1001(CLASS,object_pointer)))
+                #pragma message(EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS,object_pointer)))
                method(object);
                return supported_specialization;
           }
@@ -926,7 +1013,7 @@ static constexpr int g_test_result_int_expected = 5;
                         eds::nonmovable<CLASS>
           [[nodiscard("Required result bool True if is allowed, false if not")]]
           bool setConceptResult(const CLASS *object, FUNC f) const noexcept {
-                #pragma message(EDS_WARNING(__LOCATION__,EDS_1001(CLASS,object_pointer)))
+                #pragma message(EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS,object_pointer)))
                (object->*f)();
                return supported_specialization;
           }
@@ -1261,8 +1348,8 @@ class ConceptsFT_UT010111_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010111);
 void ConceptsFT_UT010111_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
-     auto lambda = std::move_only_function<void(ConceptType)>(
-         [](ConceptType a) noexcept -> void {
+     auto lambda = EDS_CONSERVATIVE_FUNCTION<void(ConceptType)>(
+         [](ConceptType a) EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = a;
          });
@@ -1406,8 +1493,8 @@ class ConceptsFT_UT010115_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010115);
 void ConceptsFT_UT010115_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
-     auto lambda = std::move_only_function<void(ConceptType)>(
-         [](ConceptType concept_type) noexcept -> void {
+     auto lambda = EDS_CONSERVATIVE_FUNCTION<void(ConceptType)>(
+         [](ConceptType concept_type) EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = concept_type;
          });
@@ -1455,8 +1542,8 @@ class ConceptsFT_UT010116_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010116);
 void ConceptsFT_UT010116_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
-     auto lambda = std::move_only_function<void(ConceptType)>(
-         [](ConceptType concept_type) noexcept -> void {
+     auto lambda = EDS_CONSERVATIVE_FUNCTION<void(ConceptType)>(
+         [](ConceptType concept_type) EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = concept_type;
          });
@@ -1505,8 +1592,8 @@ class ConceptsFT_UT010117_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010117);
 void ConceptsFT_UT010117_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
-     auto lambda = std::move_only_function<void(ConceptType)>(
-         [](ConceptType concept_type) noexcept -> void {
+     auto lambda = EDS_CONSERVATIVE_FUNCTION<void(ConceptType)>(
+         [](ConceptType concept_type) EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = concept_type;
          });
@@ -1584,6 +1671,8 @@ ConceptsFT::testAMemberPointer test ConceptsFT.UT010121
 
 @sa UT010121_setConceptResult
 
+Requires the compiler support for p288R9.
+
 [The targeted function if the test case is successful](@ref UT010121_setConceptResult)
 
 ConceptsFT::setConceptResult is a templated function using a concept to route the call
@@ -1611,8 +1700,8 @@ class ConceptsFT_UT010121_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010121);
 void ConceptsFT_UT010121_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
-     auto lambda_function =std::move_only_function<void(ConceptType)>(
-         [&testFunctions](ConceptType concept_type) noexcept -> void {
+     auto lambda_function = EDS_CONSERVATIVE_FUNCTION<void(ConceptType)>(
+         [&testFunctions](ConceptType concept_type) EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = concept_type;
               testFunctions.m_test_result = concept_type;
@@ -1749,6 +1838,8 @@ parameter to the correct version of the template. The parameter is a function th
 and pass the correct test id to set sm_ConceptType.The expected output can be seen in the
 table below.
 
+Requires the compiler support for p288R9.
+
  PROBE  |                   VARIABLE                        |     EXPECT
  ------ | ------------------------------------------------- | ----------------
  000020 | ConceptsFT::TestRegularFunctions<>::m_test_result | ConceptType::a_functional_lvalue
@@ -1769,8 +1860,8 @@ class ConceptsFT_UT010125_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010125);
 void ConceptsFT_UT010125_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
-     auto functional = std::move_only_function<void(ConceptType)>(
-         [&testFunctions](ConceptType concept_type) noexcept -> void {
+     auto functional = EDS_CONSERVATIVE_FUNCTION<void(ConceptType)>(
+         [&testFunctions](ConceptType concept_type) EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = concept_type;
               testFunctions.m_test_result = concept_type;
@@ -1822,7 +1913,7 @@ class ConceptsFT_UT010130_Test : public ConceptsFT {
 };
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010130);
 void ConceptsFT_UT010130_Test::TestBody() {
-     #pragma message("warning(" EDS_TOSTRING(__LINE__) ")Prefer smart pointer for CLASS type object_pointer")
+     #pragma message(EDS_WARNING(__FILE__,__LINE__,EDS_1001(CLASS,Object_Pointer)))
      ConceptsFT::TestRegularFunctions<ConceptType> testFunctions;
      ConceptsFT::TestMember testMember;
      EDS_PROBEW(100000,EXPECT_EQ(supported_specialization, testFunctions.setConceptResult(&testMember, &ConceptsFT::TestMember::memberFunction)));
@@ -2213,6 +2304,8 @@ parameter to the correct version of the template. The parameter is a function th
 and pass the correct test id to set sm_ConceptType.The expected output can be seen in the
 table below.
 
+Required compiler support for P0288R9 to be enabled
+
  PROBE  |    VARIABLE       |     EXPECT
  ------ | ----------------- | ----------------
  000010 | sm_FunctionCalled | true
@@ -2231,8 +2324,8 @@ class ConceptsFT_UT010215_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010215);
 void ConceptsFT_UT010215_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<> testFunctions;
-     auto lambda = std::move_only_function<void() noexcept>(
-         []() noexcept -> void {
+     auto lambda = EDS_CONSERVATIVE_FUNCTION<void() noexcept>(
+         []() EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = ConceptType::a_functional_lvalue_without_parameters;
          });
@@ -2302,6 +2395,8 @@ void ConceptsFT_UT010220_Test::TestBody() {
  ConceptsFT::TestRegularFunction::setConceptResult using a std::function encapsulating a capture lambda to test
  ConceptsFT.UT010225
 
+ Requires compiler support for P0288R9 to be enabled
+
 @anchor edsUGTest.ConceptsFT.UT010225
 
 @test Test Explorer: edsUGTest->ConceptsFT->UT010225
@@ -2334,8 +2429,8 @@ class ConceptsFT_UT010225_Test : public ConceptsFT {
 EDS_IMPL_GTEST_INTERNALS(ConceptsFT, UT010225);
 void ConceptsFT_UT010225_Test::TestBody() {
      ConceptsFT::TestRegularFunctions<> testFunctions;
-     auto functional = std::move_only_function<void() noexcept>(
-         [&testFunctions]() noexcept -> void {
+     auto functional = EDS_CONSERVATIVE_FUNCTION<void() noexcept>(
+         [&testFunctions]() EDS_LAMBDA_NOEXCEPT -> void {
               ConceptsFT::sm_FunctionCalled = true;
               ConceptsFT::sm_ConceptType = ConceptType::a_functional_lvalue_without_parameters;
               testFunctions.m_test_result = ConceptType::a_functional_lvalue_without_parameters;
