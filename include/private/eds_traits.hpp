@@ -1,6 +1,6 @@
 #ifndef TRAITS_HPP
 #define TRAITS_HPP
-#include "eds_util.hpp"
+#include "eds_types.hpp"
 #include <tuple>
 #include <type_traits>
 #include <functional>
@@ -84,6 +84,8 @@ template <typename T>
 static constexpr bool is_copyable_and_not_movable_v = is_copyable_v<T> && is_not_movable_v<T>;
 template <typename T>
 static constexpr bool is_not_copyable_and_movable_v = is_not_copyable_v<T> && is_movable_v<T>;
+template <typename T>
+static constexpr bool is_not_void_v = !std::is_void_v<T>;
 class PSuedoObject {
    public:
      PSuedoObject() = delete;
@@ -186,11 +188,14 @@ constexpr static bool is_void_return_code_v = is_void_return_code<T>::value;
 // template <typename T> bool is_pointer_to_regular_function_v = ;
 
 template <class...> struct FunctionTypeChecker;
-template <class RC, class... PARAMS> struct FunctionTypeChecker<RC(PARAMS...) noexcept> {
+template <class RC, class... PARAMS>
+requires is_not_void_v<RC>
+struct FunctionTypeChecker<RC(PARAMS...) noexcept> {
      using ReturnType_t = void;
 using ParameterList_t = std::tuple<PARAMS...>;
 constexpr static size_t num_params = sizeof...(PARAMS);
 constexpr static bool is_function_pointer_v = false;
+constexpr static bool is_functor_v = false;
 constexpr static bool is_member_function_v = false;
 constexpr static bool is_return_code_void_v = std::is_void_v<RC>;
 constexpr static bool is_noexcept_v = true;
@@ -198,8 +203,9 @@ constexpr static bool is_constant_v = false;
 constexpr static bool is_function_v = true;
 constexpr static bool is_eligible_delegate_v = is_noexcept_v & is_return_code_void_v;
 };
-template <class... PARAMS> struct FunctionTypeChecker<void(PARAMS...) noexcept> {
-using ReturnType_t = void;
+template <class RC, class... PARAMS> 
+requires std::is_void_v<RC> struct FunctionTypeChecker<RC(PARAMS...) noexcept> {
+using ReturnType_t = RC;
 using ParameterList_t = std::tuple<PARAMS...>;
 constexpr static auto num_params = sizeof...(PARAMS);
 constexpr static bool is_function_pointer_v = false;
@@ -209,22 +215,33 @@ constexpr static bool is_noexcept_v = true;
 constexpr static bool is_constant_v = false;
 constexpr static bool is_function_v = true;
 constexpr static bool is_eligible_delegate_v = is_noexcept_v & is_return_code_void_v;
+#ifndef EDS_TEST_REGIME
+static_assert(is_noexcept_v == true, "Only functions with noexcept and return void are supported as Delegates.");
+#else
+#pragma message(EDS_FATAL(__FILE__,__LINE__,EDS_2004()))
+#endif
 };
-template <class RC, class... PARAMS> struct FunctionTypeChecker<RC(PARAMS...)> {
+template <class RC, class... PARAMS> 
+struct FunctionTypeChecker<RC(PARAMS...)> {
 using ReturnType_t = RC;
 using ParameterList_t = std::tuple<PARAMS...>;
 constexpr static size_t num_params = sizeof...(PARAMS);
 constexpr static bool is_function_pointer_v = false;
+constexpr static bool is_functor_v = false;
 constexpr static bool is_member_function_v = false;
 constexpr static bool is_return_code_void_v = std::is_void_v<RC>;
 constexpr static bool is_noexcept_v = false;
 constexpr static bool is_constant_v = false;
 constexpr static bool is_function_v = true;
 constexpr static bool is_eligible_delegate_v = false;
-static_assert(is_noexcept_v, "Only functions with noexcept are supported as Delegates.");
+#ifndef EDS_TEST_REGIME
+static_assert(is_noexcept_v == true, "Only functions with noexcept and return void are supported as Delegates.");
+#else
+#pragma message(EDS_FATAL(__FILE__,__LINE__,EDS_2003()))
+#endif
 };
 template <class RC> struct FunctionTypeChecker<RC() noexcept> {
-using ReturnType_t = void;
+using ReturnType_t = RC;
 using ParameterList_t = std::tuple<void>;
 constexpr static size_t num_params = 0;
 constexpr static bool is_function_pointer_v = false;
@@ -234,6 +251,9 @@ constexpr static bool is_noexcept_v = true;
 constexpr static bool is_constant_v = false;
 constexpr static bool is_function_v = true;
 constexpr static bool is_eligible_delegate_v = is_noexcept_v & is_return_code_void_v;
+#ifndef EDS_TEST_REGIME
+static_assert(is_return_code_void_v == true, "Only functions with return void are supported as Delegates.");
+#endif
 };
 template <> struct FunctionTypeChecker<void() noexcept> {
 using ReturnType_t = void;

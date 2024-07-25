@@ -40,5 +40,7 @@
 #define EDS_2002(_OS, _COMPILER, _COMPILER_VERSION,_LIBSTD_VERSION)                                              \
      "EDS 2002 I OS: " EDS_TOSTRING(_OS) " COMPILER: " EDS_TOSTRING(_COMPILER) \
 " COMPILER VERSION: " EDS_TOSTRING(_COMPILER_VERSION) " STD LIB VERSION: " EDS_TOSTRING(_LIBSTD_VERSION)
+#define EDS_2003() "EDS 2003 E A delegate must have noexcept."
+#define EDS_2004() "EDS 2004 E A delegate must return void."
 #include "eds_env.hpp"
 #endif 

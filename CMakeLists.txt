@@ -61,6 +61,7 @@ set(eds_private_headers
   "${eds_SOURCE_DIR}/include/private/eds_env.hpp" 
   "${eds_SOURCE_DIR}/include/private/eds_util.hpp" 
   "${eds_SOURCE_DIR}/include/private/eds_hash.hpp" 
+  "${eds_SOURCE_DIR}/include/private/eds_types.hpp" 
   "${eds_SOURCE_DIR}/include/private/eds_traits.hpp" 
   "${eds_SOURCE_DIR}/include/private/event/member_call.hpp"
   "${eds_SOURCE_DIR}/include/private/event/resource.hpp"
@@ -122,8 +123,28 @@ set(eds_test_source
   "${eds_SOURCE_DIR}/test/src/MemberCallUGTest.cpp"
   "${eds_SOURCE_DIR}/test/src/CallHandlerUGTest.cpp"
   "${eds_SOURCE_DIR}/test/src/DelegateUGTest.cpp"
- "test/src/ConceptsUGTest.cpp" "test/src/TraitsUGTest.cpp")
-set(eds_test_headers "${eds_SOURCE_DIR}/test/include/custom_gtest.hpp" ${eds_all_headers})
+  "${eds_SOURCE_DIR}/test/src/ConceptsUGTest.cpp" 
+  "${eds_SOURCE_DIR}/test/src/TraitsUGTest.cpp"
+  "${eds_SOURCE_DIR}/test/src/TestMember.cpp"
+  "${eds_SOURCE_DIR}/test/src/TestMemberCopyable.cpp"
+  "${eds_SOURCE_DIR}/test/src/TestMemberMovable.cpp"
+  "${eds_SOURCE_DIR}/test/src/TestMemberCopyableMovable.cpp")
+############################################################################################################
+# eds unit tests headers and utilities
+set(eds_test_headers 
+   "${eds_SOURCE_DIR}/test/include/concept_type.hpp" 
+   "${eds_SOURCE_DIR}/test/include/custom_gtest.hpp" 
+   "${eds_SOURCE_DIR}/test/include/function_type.hpp" 
+   "${eds_SOURCE_DIR}/test/include/object_properties.hpp" 
+   "${eds_SOURCE_DIR}/test/include/test_class_forwarding_property.hpp" 
+   "${eds_SOURCE_DIR}/test/include/test_class_parameter_property.hpp" 
+   "${eds_SOURCE_DIR}/test/include/test_function_selection.hpp" 
+   "${eds_SOURCE_DIR}/test/include/test_member.hpp" 
+   "${eds_SOURCE_DIR}/test/include/test_member_copyable.hpp" 
+   "${eds_SOURCE_DIR}/test/include/test_member_copyable_movable.hpp" 
+   "${eds_SOURCE_DIR}/test/include/test_member_movable.hpp" 
+   "${eds_SOURCE_DIR}/test/include/test_object_interface.hpp" 
+   ${eds_all_headers})
 add_executable(edsUGTest ${eds_test_source} ${eds_test_headers})
 target_include_directories(
 edsUGTest PUBLIC "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/googletest-src/googletest/include>"
@@ -136,16 +157,22 @@ add_test(NAME unit_test COMMAND edsUGTest)
 # eds documentation
 # Override the default doxygen output directory, which is CMAKE_CURRENT_BINARY_DIR. 
 set(DOXYGEN_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/docs")
+set(DOXYGEN_GENERATE_BUGLIST YES)
 # Enable HTML documentation generation
 set(DOXYGEN_GENERATE_HTML YES)
 # Enable MAN page generation
 set(DOXYGEN_GENERATE_MAN NO)
+# Enable Tree view generation
+set(DOXYGEN_GENERATE_TREEVIEW YES)
+set(DOXYGEN_SEARCHENGINE YES)
 # Enable markdown support
 set(DOXYGEN_MARKDOWN_SUPPORT YES)
 # Enable autolink support
 set(DOXYGEN_AUTOLINK_SUPPORT YES)
 # Enable dot graph support
 set(DOXYGEN_HAVE_DOT YES)
+# Enable Spanish and other language support
+set(DOXYGEN_INPUT_ENCODING ISO-8859-1)
 # Include collaboration diagrams in class documentation
 set(DOXYGEN_COLLABORATION_GRAPH NO)
 # Include class diagrams in class documentation

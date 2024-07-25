@@ -27,7 +27,15 @@
                      << EDS_EOL();                                                            \
      PASSERTION
 #define EDS_PROBEW(ID, PASSERTION, ...)                                                       \
-     EDS_INFO(PROBE) << #ID << '(' << __LINE__ << ')' << #PASSERTION << ' ' __VA_ARGS__        \
+     EDS_INFO(PROBE) << #ID << '(' << __LINE__ << ')' << #PASSERTION << ' ' __VA_ARGS__       \
+                     << EDS_EOL();                                                            \
+     PASSERTION
+/**
+ * Checks a single output of a test case. Makes assertions more readable and easy to debug.
+ * 
+ */
+#define EDST_PROBE(ID, PASSERTION, ...)                                                       \
+     EDS_INFO(PROBE) << #ID << '(' << __LINE__ << ')' << #PASSERTION << ' ' __VA_ARGS__       \
                      << EDS_EOL();                                                            \
      PASSERTION
 /// An enhanced version of GTEST's TEST_F macro that allows to define a test case with a
@@ -55,6 +63,37 @@
                                                                                               \
    private:                                                                                   \
      static ::testing::TestInfo *const test_info_
+#define EDS_EXPECTED_TEST_ID m_expected_test_id
+/**
+ * Declare the guts of a Google Unit Test, a superset of TEST_F.
+ * 
+ * In addition to the standard Google Test macros, this macro declares a member variable
+ * to store the unique test_id in. The test_id can be passed around between
+ * various components of the test to track the test case for debugging purposes.
+ * 
+ * @param test_suite_name The name of the test fixture class
+ * @param test_name The unique unquoted name of the test case
+ * @param test_id The unique numeric identifier of the test case
+ * @return The guts of the GTEST_F test fixture that can be generated with TEST_F 
+ */
+#define EDST_DCL_GTEST_INTERNALS(test_suite_name, test_name, test_id)                          \
+   public:                                                                                    \
+     void TestBody() override;                                                               \
+     int EDS_EXPECTED_TEST_ID = test_id;                                                        \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)() = default;                          \
+     ~GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)() override = default;                \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)                                       \
+     (const GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &) = delete;                   \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &operator=(                           \
+         const GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &) = delete;                \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name)                                       \
+     (GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &&) noexcept = delete;               \
+     GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &operator=(                           \
+         GTEST_TEST_CLASS_NAME_(test_suite_name, test_name) &&) noexcept = delete;            \
+   private:                                                                                   \
+     static ::testing::TestInfo *const test_info_; \
+   public:
+
 #define EDS_IMPL_GTEST_INTERNALS(test_suite_name, test_name)                                  \
      ::testing::TestInfo *const GTEST_TEST_CLASS_NAME_(test_suite_name,                       \
                                                        test_name)::test_info_ =               \
